@@ -1,5 +1,5 @@
-import User from "@/models/user/User";
+import User from "../user/User";
 
-export default class Message {
-  constructor(private from: User, private content: string) {}
+export class Message {
+    constructor(private from: User, private content: string) { }
 }

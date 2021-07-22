@@ -1,55 +1,59 @@
-import { Application } from "express";
-import { Server } from "socket.io";
-import ChatEvent from "./ChatEvent";
-import ChatMessage from "../message/ChatMessage";
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
+import * as http from "http";
+import { Message } from "../message/Message";
 
-export default class ChatServer {
+export class ChatServer {
   public static readonly PORT: number = 8080;
-
-  private _app: Application;
-  private server: Server;
-  private io: Server;
-
+  private app: express.Application;
+  private server: http.Server;
+  private io: SocketIO.Server;
   private port: string | number;
 
-  get app(): Application {
-    return this._app;
-  }
-
   constructor() {
-    this._app = express();
-    this.port = process.env.PORT || ChatServer.PORT;
-    this._app.use(cors());
-    this._app.options("*", cors());
-    this.server = createServer(this._app);
-    this.initSocket();
+    this.createApp();
+    this.config();
+    this.createServer();
+    this.sockets();
     this.listen();
   }
 
-  private initSocket(): void {
-    this.io = socketIo(this.server);
+  private createApp(): void {
+    this.app = express();
+    this.app.use(cors());
+  }
+
+  private createServer(): void {
+    this.server = http.createServer(this.app);
+  }
+
+  private config(): void {
+    this.port = process.env.PORT || ChatServer.PORT;
+  }
+
+  private sockets(): void {
+    this.io = require("socket.io").listen(this.server, { origins: '*:*' });
   }
 
   private listen(): void {
-    // server listening on our defined port
     this.server.listen(this.port, () => {
       console.log("Running server on port %s", this.port);
     });
 
-    //socket events
-    this.io.on(ChatEvent.CONNECT, (socket: any) => {
+    this.io.on("connect", (socket: any) => {
       console.log("Connected client on port %s.", this.port);
-
-      socket.on(ChatEvent.MESSAGE, (m: ChatMessage) => {
+      socket.on("message", (m: Message) => {
         console.log("[server](message): %s", JSON.stringify(m));
         this.io.emit("message", m);
       });
 
-      socket.on(ChatEvent.DISCONNECT, () => {
+      socket.on("disconnect", () => {
         console.log("Client disconnected");
       });
     });
+  }
+
+  public getApp(): express.Application {
+    return this.app;
   }
 }
