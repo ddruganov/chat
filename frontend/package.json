@@ -1,0 +1,63 @@
+{
+  "name": "admin.pacc",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "bootstrap-icons": "^1.4.1",
+    "core-js": "^3.6.5",
+    "querystring": "^0.2.0",
+    "vue": "^3.0.11",
+    "vue-class-component": "^8.0.0-0",
+    "vue-property-decorator": "^9.1.2",
+    "vue-router": "^4.0.0-0",
+    "vuex": "^4.0.0",
+    "vuex-smart-module": "^0.5.0"
+  },
+  "devDependencies": {
+    "@babel/polyfill": "^7.7.0",
+    "@typescript-eslint/eslint-plugin": "^4.18.0",
+    "@typescript-eslint/parser": "^4.18.0",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-typescript": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.0.0",
+    "@vue/eslint-config-typescript": "^7.0.0",
+    "babel-eslint": "^10.1.0",
+    "bootstrap": "^5.0.1",
+    "mutationobserver-shim": "^0.3.3",
+    "popper.js": "^1.16.0",
+    "sass": "^1.32.11",
+    "sass-loader": "^10.1.1",
+    "typescript": "^4.3.2",
+    "vue-cli-plugin-bootstrap": "~0.4.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended",
+      "@vue/typescript"
+    ],
+    "parserOptions": {
+      "parser": "@typescript-eslint/parser"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
