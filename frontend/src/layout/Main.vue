@@ -31,24 +31,24 @@ import Footer from "./Footer.vue";
 
 import { Options, Vue } from "vue-class-component";
 
-import { authStore, GET_CURRENT_USER } from "@/store/modules/auth.store";
+// import { authStore, GET_CURRENT_USER } from "@/store/modules/auth.store";
 
 @Options({
   components: { Topbar, Footer },
 })
 export default class MainLayout extends Vue {
-  dataLoaded = false;
+  dataLoaded = true;
 
   mounted() {
     this.load();
   }
   load() {
-    authStore
-      .context(this.$store)
-      .dispatch(GET_CURRENT_USER)
-      .then(() => {
-        this.dataLoaded = true;
-      });
+    // authStore
+    //   .context(this.$store)
+    //   .dispatch(GET_CURRENT_USER)
+    //   .then(() => {
+    //     this.dataLoaded = true;
+    //   });
   }
 }
 </script>
