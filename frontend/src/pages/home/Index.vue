@@ -146,7 +146,6 @@ export default class HomeIndex extends Vue {
 
   private addUser() {
     this.ready = true;
-    console.log("add use disconn?", this.socket.disconnected);
     this.socket.emit("joined", this.username);
   }
 }
