@@ -1,4 +1,4 @@
-import { Client } from "pg";
+import { Client, QueryResult } from "pg";
 
 export default class Database {
   private _db: Client;
@@ -11,32 +11,36 @@ export default class Database {
       user: 'ddruganov',
       password: 'admin'
     });
+    this._db.connect((err) => {
+      err && console.log('pg connection error:', err.message, err.stack);
+    })
   }
 
-  addUser(data: any) {
+  async addUser(data: any) {
     return new Promise(async (resolve, reject) => {
-      if (await this.isUserExist(data)) {
-        resolve(true);
-      } else
-        this._db.query(
-          "INSERT INTO users (name, user_id) VALUES ($1, $2)",
-          [data.name, data.user_id],
-          function (err, rows) {
-            if (err) reject(new Error(err.message));
-            else resolve(rows);
-          }
-        );
+      const exists = await this.isUserExist(data);
+      if (exists) {
+        return resolve(true);
+      }
+
+      this._db.query(
+        "INSERT INTO users (name, user_id) VALUES ($1, $2)",
+        [data.name, data.user_id],
+        function (err, res) {
+          err ? reject(new Error(err.message)) : resolve(res);
+        }
+      );
+
     });
   }
 
   isUserExist(data: any) {
     return new Promise((resolve, reject) => {
       this._db.query(
-        "SELECT * FROM users WHERE name = ?",
+        "select * from users where name = $1",
         [data.name],
-        function (err, rows: any) {
-          if (err) reject(new Error(err.message));
-          else resolve(rows[0]);
+        function (err, res: QueryResult<any>) {
+          err ? reject(new Error(err.message)) : resolve(res.rows[0]);
         }
       );
     });

@@ -1,8 +1,10 @@
 // import { Request, Response } from "express";
 import { Socket } from "socket.io";
-import Database from "./config/database";
+import Query from "./components/db/Query";
+import Command from "./components/db/Command";
 
 import express from "express";
+import User from "./models/user/User";
 
 const app = express();
 const http = require("http").Server(app);
@@ -11,8 +13,6 @@ const io = require("socket.io")(http, {
         origin: '*',
     }
 });
-
-const db = new Database();
 
 app.use((req, res, next) => {
     res.append('Access-Control-Allow-Origin', ['*']);
@@ -39,7 +39,7 @@ io.on("connection", function (socket: Socket) {
             user_id: socket.id,
             name: message.user,
         };
-        await db.storeUserMessage(data);
+        await (new Command()).insert({ fields: data, tableName: User.tableName() }).execute();
         socket.broadcast.emit("chat-message", message);
     });
 
@@ -69,6 +69,6 @@ io.on("connection", function (socket: Socket) {
     });
 });
 
-http.listen(80, () => {
-    console.log("Listening on port *:80");
+http.listen(3000, () => {
+    console.log("Listening on port localhost:3000");
 });

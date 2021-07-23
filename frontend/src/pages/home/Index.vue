@@ -66,7 +66,7 @@ type Info = {
 };
 
 export default class HomeIndex extends Vue {
-  private socket: Socket = io("http://localhost:80");
+  private socket: Socket = io("http://localhost:3000");
 
   private newMessage = "";
   private typing = false;
