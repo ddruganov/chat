@@ -46,26 +46,6 @@
   .h-fit-content {
     height: fit-content !important;
   }
-
-  .btn {
-    line-height: 0 !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .btn-sm {
-    padding: 0.25rem;
-  }
-
-  .lh-normal {
-    line-height: normal !important;
-  }
-
-  .error {
-    font-size: 10px;
-    color: #dc3545;
-  }
 }
 </style>
 

@@ -1,8 +1,28 @@
 <template>
-  <h3 class="text-center">Вход</h3>
+  <h3 class="text-center mb-3">вход</h3>
 
-  <a v-if="vkLoginLink" :href="vkLoginLink" class="btn btn-sm btn-primary lh-normal w-100">Войти через VK</a>
+  <form class="login-form" @submit.prevent="login()">
+    <div class="input-wrapper mb-3" data-label="логин">
+      <input type="text" class="form-control" v-model="email" />
+      <span v-if="errors.email" class="error">{{ errors.email }}</span>
+    </div>
+    <div class="input-wrapper mb-3" data-label="пароль">
+      <input type="text" class="form-control" v-model="password" />
+      <span v-if="errors.password" class="error">{{ errors.password }}</span>
+    </div>
+    <button class="btn btn-primary" :disabled="requestPending">
+      <div v-if="requestPending" class="spinner-border text-white spinner-border-sm" />
+      <span v-else>войти</span>
+    </button>
+  </form>
 </template>
+
+<style lang="scss" scoped>
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+</style>
 
 <script lang="ts">
 import Api from "@/common/api";
@@ -14,22 +34,32 @@ export default class AuthLogin extends Vue {
     return authStore.context(this.$store).getters.isAuthenticated;
   }
 
-  private vkLoginLink: string = "";
+  private requestPending: boolean = false;
+
+  private email: string = "";
+  private password: string = "";
+  private errors: { [key: string]: string } = {};
 
   mounted() {
     this.load();
   }
 
-  private load() {
+  private load() {}
+
+  private login() {
+    this.requestPending = true;
     Api.auth
-      .getVkLoginLink()
+      .login(this.email, this.password)
       .then((response) => {
         if (!response.success) {
-          throw new Error(response.error);
+          this.errors = response.data.errors;
+          return;
         }
-        this.vkLoginLink = response.data.link;
       })
-      .catch((e) => this.$notifications.error(e.message));
+      .catch((e) => this.$notifications.error("Ошибка авторизации<br>" + e.message))
+      .finally(() => {
+        this.requestPending = false;
+      });
   }
 }
 </script>

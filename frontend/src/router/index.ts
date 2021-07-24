@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteParams, RouteRecordRaw } from "vue-router";
 
-const routes: Array<RouteRecordRaw> = [
+const routes: RouteRecordRaw[] = [
   {
     path: "/",
     component: () => import("@/layout/Main.vue"),
@@ -20,7 +20,6 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/auth/login",
         component: () => import("@/pages/auth/Login.vue"),
-        props: (route: RouteParams) => ({ backurl: (route.query as any).backurl }),
       },
       {
         path: "/auth/logout",

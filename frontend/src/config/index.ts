@@ -1,5 +1,5 @@
 //import local from "@/config/local";
 
 export default {
-  host: "http://localhost:8001" // local ? local.host : "https://stt.com",
+  host: "http://localhost:3000" // local ? local.host : "https://stt.com",
 };

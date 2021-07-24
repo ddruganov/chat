@@ -1,0 +1,17 @@
+.input-wrapper {
+  position: relative;
+  &::before {
+    position: absolute;
+    content: attr(data-label);
+    padding: 0 0.25rem;
+    top: -10px;
+    left: 10px;
+    color: #999;
+    background: white;
+  }
+
+  .error {
+    color: red;
+    margin-left: 10px;
+  }
+}
