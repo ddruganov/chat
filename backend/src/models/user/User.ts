@@ -30,12 +30,12 @@ export default class User {
         this.columns.forEach(column => {
             select[column] = '_' + column;
         });
+
         const sql = new Query()
             .addSelect(select)
             .setFrom({ alias: 'u', tableName: User.tableName() })
-            .addJoin({ type: 'inner', from: { alias: 'wow', tableName: 'rand.table' }, on: {} })
             .addWhere(condition)
-            .build();
+            .one();
         return undefined;
 
         switch (typeof condition) {

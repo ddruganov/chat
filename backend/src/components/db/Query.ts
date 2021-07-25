@@ -1,30 +1,13 @@
 import { Client } from "pg";
-
-type Select = {
-    [key: string]: string
-};
-
-type From = {
-    alias: string;
-    tableName: string;
-};
-
-type Join = {
-    type: string;
-    from: From;
-    on: Where;
-};
-
-type Where = {
-    [key: string]: number | string
-} | number;
-
-type Clauses = {
-    select: Select[],
-    from?: From,
-    join: Join[],
-    where: Where[]
-};
+import databaseConfig from "../../config/database.config";
+import SelectClauseParser from './clauseParsers/SelectClauseParser';
+import FromClauseParser from './clauseParsers/FromClauseParser';
+import JoinClauseParser from './clauseParsers/JoinClauseParser';
+import WhereClauseParser from './clauseParsers/WhereClauseParser';
+import Clauses from "./clauses/Clauses";
+import Select from "./clauses/Select";
+import From from "./clauses/From";
+import Join from "./clauses/Join";
 
 export default class Query {
     private _db: Client;
@@ -41,13 +24,7 @@ export default class Query {
     private offset?: number;
 
     public constructor() {
-        this._db = new Client({
-            host: 'localhost',
-            port: 5432,
-            database: 'chat',
-            user: 'ddruganov',
-            password: 'admin'
-        });
+        this._db = new Client(databaseConfig);
         this._db.connect((err) => {
             err && console.log('pg connection error:', err.message, err.stack);
         })
@@ -68,7 +45,7 @@ export default class Query {
         return this;
     }
 
-    public addWhere(value: Where) {
+    public addWhere(value: any) {
         this.clauses.where.push(value);
         return this;
     }
@@ -113,37 +90,19 @@ export default class Query {
     }
 
     public build() {
-        let sql = 'select ';
+        let texts = [];
 
-        const selectClauses = this.clauses.select;
-        selectClauses.forEach((select) => {
-            for (const key in select) {
-                sql += [this.escape(key), 'as', this.escape(select[key]), ',', ''].join(' ');
-            }
-        });
-        sql = sql.slice(0, -1) + ' '; // remove the trailing comma
+        let selectText = this.clauses.select.map(select => new SelectClauseParser(select).parse()).join(' ');
+        texts.push(['select', selectText].join(' '));
 
-        const fromClause = this.clauses.from;
-        sql += 'from ' + this.escape(fromClause?.tableName) + ' as ' + this.escape(fromClause?.alias);
-        sql += ' ';
+        this.clauses.from && texts.push(['from', new FromClauseParser(this.clauses.from).parse()].join(' '));
 
-        const joinClauses = this.clauses.join;
-        joinClauses.forEach(join => {
-            sql += [join.type, 'join', this.escape(join.from.tableName), 'as', this.escape(join.from.alias), 'on', ''].join(' ');
-        });
+        this.clauses.join.forEach(join => texts.push(new JoinClauseParser(join).parse()));
 
-        console.log('|' + sql + '|');
-        this.sql = sql;
-    }
+        let whereText = this.clauses.where.map(where => new WhereClauseParser(where).parse()).join(' ');
+        texts.push(['where', whereText].join(' '));
 
-    private escape(data: any, char = '"') {
-        switch (typeof data) {
-            case typeof 0:
-                return data;
-            case typeof '':
-                return (data as string).split('.').map(piece => char + piece + char).join('.')
-        }
-
-        return data;
+        this.sql = texts.join(' ');
+        console.log(this.sql);
     }
 }
