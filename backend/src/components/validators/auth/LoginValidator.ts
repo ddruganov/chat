@@ -1,5 +1,4 @@
 import User from "../../../models/user/User";
-import Command from "../../db/Command";
 import EmailValidator from "../base/EmailValidator";
 import BaseValidator from "../BaseValidator";
 import LoginData from "./LoginData";
@@ -22,7 +21,7 @@ export default class LoginValidator extends BaseValidator {
                 throw new Error('Неверный формат');
             }
 
-            const res = await User.findOne({ email: this.email });
+            const res = await User.findOne({ left: 'email', value: '=', right: this.email });
             if (!res) {
                 throw new Error('Пользователь не найден');
             }

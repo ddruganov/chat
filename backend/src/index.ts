@@ -1,12 +1,12 @@
 // import { Socket } from "socket.io";
 // import Command from "./components/db/Command";
 
-import User from "./models/user/User";
-
 import express from "express";
 import AuthController from "./controllers/AuthController";
 import cors from "cors";
 import bodyParser from "body-parser";
+import Query from "./components/db/Query";
+import User from "./models/user/User";
 
 const app = express();
 const http = require("http").Server(app);
@@ -28,8 +28,16 @@ app.use(cors({
 app.use('/auth', AuthController);
 
 app.get('/', async (_, __, next) => {
-    const user = await User.findOne({ email: 'ddruganov@bk.ru' });
-    console.log(user?.signupDate);
+
+    const q = await new Query()
+        .select({ 'id': 'id' })
+        .from({ alias: 'u', tableName: 'messages' })
+        .orderBy({ column: 'id', direction: 'asc' })
+        .one();
+    console.log(q);
+
+    // const user = await User.findAll({ left: 'email', value: '=', right: 'ddruganov@bk.ru' });
+    // console.log(user);
     next();
 });
 

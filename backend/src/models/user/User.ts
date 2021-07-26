@@ -1,4 +1,4 @@
-import Command from "../../components/db/Command";
+import Where from "../../components/db/clauses/where/Where";
 import Query from "../../components/db/Query";
 
 type UserData = {
@@ -25,55 +25,42 @@ export default class User {
         return ['id', 'email', 'password', 'name', 'signup_date'];
     }
 
-    public static async findOne(condition: any): Promise<User | undefined> {
+    public static async findAll(condition: Where): Promise<User[] | undefined> {
         let select = {} as { [key: string]: string };
         this.columns.forEach(column => {
             select[column] = '_' + column;
         });
 
-        const sql = new Query()
-            .addSelect(select)
-            .setFrom({ alias: 'u', tableName: User.tableName() })
-            .addWhere(condition)
-            .one();
-        return undefined;
+        const data = await new Query()
+            .select(select)
+            .from({ alias: 'u', tableName: User.tableName() })
+            .where(condition)
+            .all();
 
-        switch (typeof condition) {
-            case typeof 0: {
-                return User.findOne({ id: condition });
-            }
-            case typeof {}: {
-                let sql = 'select * from "user".user where ';
-                for (const key in condition) {
-                    sql += key + ' = ' + this.escape(condition[key]);
-                }
-                const data = await new Command(sql).execute();
-                if (!data.rowCount) {
-                    return undefined;
-                }
-
-                const userData = data.rows[0];
-                for (const key in userData) {
-                    userData['_' + key] = userData[key];
-                    delete userData[key];
-                }
-                const model = Object.assign(new User(), userData);
-                return model;
-            }
+        if (!data) {
+            return undefined;
         }
 
-        return undefined;
+        return data.map(userData => Object.assign(new User(), userData));
     }
 
-    private static escape(data: any) {
-        switch (typeof data) {
-            case typeof 0:
-                return data;
-            case typeof '':
-                return "'" + data + "'";
+    public static async findOne(condition: Where): Promise<User | undefined> {
+        let select = {} as { [key: string]: string };
+        this.columns.forEach(column => {
+            select[column] = '_' + column;
+        });
+
+        const data = await new Query()
+            .select(select)
+            .from({ alias: 'u', tableName: User.tableName() })
+            .where(condition)
+            .one();
+
+        if (!data) {
+            return undefined;
         }
 
-        return data;
+        return Object.assign(new User(), data);
     }
 
     public get signupDate() {

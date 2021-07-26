@@ -8,6 +8,9 @@ import Clauses from "./clauses/Clauses";
 import Select from "./clauses/Select";
 import From from "./clauses/From";
 import Join from "./clauses/Join";
+import Where from "./clauses/where/Where";
+import Operator from "./clauses/where/Operator";
+import Order from "./clauses/Order";
 
 export default class Query {
     private _db: Client;
@@ -20,8 +23,9 @@ export default class Query {
         join: [],
         where: []
     };
-    private limit?: number;
-    private offset?: number;
+    private _limit?: number;
+    private _offset?: number;
+    private order?: Order;
 
     public constructor() {
         this._db = new Client(databaseConfig);
@@ -30,33 +34,68 @@ export default class Query {
         })
     }
 
+    public select(value: Select) {
+        this.clauses.select = [value];
+        return this;
+    }
+
     public addSelect(value: Select) {
         this.clauses.select.push(value);
         return this;
     }
 
-    public setFrom(value: From) {
+    public from(value: From) {
         this.clauses.from = value;
         return this;
     }
 
-    public addJoin(value: Join) {
+    public join(value: Join) {
         this.clauses.join.push(value);
         return this;
     }
 
-    public addWhere(value: any) {
+    public where(value: Where) {
         this.clauses.where.push(value);
         return this;
     }
 
-    public setLimit(value: number) {
-        this.limit = value;
+    public andWhere(value: Where) {
+        this.addWhere('and', value);
+
         return this;
     }
 
-    public setOffset(value: number) {
-        this.offset = value;
+    public orWhere(value: Where) {
+        this.addWhere('or', value);
+
+        return this;
+    }
+
+    private addWhere(operator: string, value: Where) {
+        const clause: Operator = {
+            operator: operator,
+            operands: [
+                ...this.clauses.where,
+                value
+            ]
+        };
+        this.clauses.where = [clause];
+
+        return this;
+    }
+
+    public limit(value: number) {
+        this._limit = value;
+        return this;
+    }
+
+    public offset(value: number) {
+        this._offset = value;
+        return this;
+    }
+
+    public orderBy(value: Order) {
+        this.order = value;
         return this;
     }
 
@@ -71,7 +110,7 @@ export default class Query {
     }
 
     public async one() {
-        this.setLimit(1);
+        this.limit(1);
         const all = await this.all();
         if (!all) {
             return undefined;
@@ -90,19 +129,26 @@ export default class Query {
     }
 
     public build() {
-        let texts = [];
+        let texts: string[] = [];
 
-        let selectText = this.clauses.select.map(select => new SelectClauseParser(select).parse()).join(' ');
+        let selectText = this.clauses.select.map(select => new SelectClauseParser(select).parse()).join(', ');
         texts.push(['select', selectText].join(' '));
 
         this.clauses.from && texts.push(['from', new FromClauseParser(this.clauses.from).parse()].join(' '));
 
         this.clauses.join.forEach(join => texts.push(new JoinClauseParser(join).parse()));
 
-        let whereText = this.clauses.where.map(where => new WhereClauseParser(where).parse()).join(' ');
-        texts.push(['where', whereText].join(' '));
+        if (this.clauses.where.length) {
+            let whereText = this.clauses.where.map(where => new WhereClauseParser(where).parse()).join(' ');
+            texts.push(['where', whereText].join(' '));
+        }
+
+        this.order && texts.push(['order by', this.order.column, this.order.direction].join(' '));
+
+        this._limit && texts.push(['limit', String(this._limit)].join(' '));
+
+        this._offset && texts.push(['offset', String(this._offset)].join(' '));
 
         this.sql = texts.join(' ');
-        console.log(this.sql);
     }
 }
