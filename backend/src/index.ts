@@ -5,16 +5,14 @@ import express from "express";
 import AuthController from "./controllers/AuthController";
 import cors from "cors";
 import bodyParser from "body-parser";
-import Query from "./components/db/Query";
-import User from "./models/user/User";
 
 const app = express();
 const http = require("http").Server(app);
-// const io = require("socket.io")(http, {
-//     cors: {
-//         origin: '*',
-//     }
-// });
+const io = require("socket.io")(http, {
+    cors: {
+        origin: '*',
+    }
+});
 
 app.use(bodyParser.json())
 
@@ -26,20 +24,6 @@ app.use(cors({
 }));
 
 app.use('/auth', AuthController);
-
-app.get('/', async (_, __, next) => {
-
-    const q = await new Query()
-        .select({ 'id': 'id' })
-        .from({ alias: 'u', tableName: 'messages' })
-        .orderBy({ column: 'id', direction: 'asc' })
-        .one();
-    console.log(q);
-
-    // const user = await User.findAll({ left: 'email', value: '=', right: 'ddruganov@bk.ru' });
-    // console.log(user);
-    next();
-});
 
 // io.on("connection", function (socket: Socket) {
 

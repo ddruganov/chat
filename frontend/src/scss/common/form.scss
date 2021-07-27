@@ -4,10 +4,19 @@
     position: absolute;
     content: attr(data-label);
     padding: 0 0.25rem;
-    top: -10px;
+    top: calc(50% - 9px);
     left: 10px;
     color: #999;
-    background: white;
+    background: transparent;
+    transition: 0.125s all linear;
+  }
+
+  &:focus-within {
+    &::before {
+      top: -10px;
+      left: 5px;
+      background: white;
+    }
   }
 
   .error {
