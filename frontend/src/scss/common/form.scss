@@ -1,26 +1,40 @@
 .input-wrapper {
   position: relative;
+
+  .input {
+    padding: 0.5rem 1rem;
+    border: 1px solid $gray;
+    border-radius: $border-radius;
+    outline: none;
+    transition: 0.5s all linear;
+    width: 100%;
+    &:focus,
+    &:focus-visible,
+    &:focus-within {
+      border: 1px solid $blue;
+    }
+  }
+
   &::before {
     position: absolute;
     content: attr(data-label);
     padding: 0 0.25rem;
-    top: calc(50% - 9px);
+    top: -9px;
     left: 10px;
-    color: #999;
-    background: transparent;
-    transition: 0.125s all linear;
+    background: $white;
+    color: $gray;
+    transition: 0.5s all linear;
+    pointer-events: none;
   }
 
   &:focus-within {
     &::before {
-      top: -10px;
-      left: 5px;
-      background: white;
+      color: $blue;
     }
   }
 
   .error {
-    color: red;
+    color: $red;
     margin-left: 10px;
   }
 }

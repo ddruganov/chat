@@ -3,14 +3,14 @@
 
   <form class="login-form" @submit.prevent="login()">
     <div class="input-wrapper mb-3" data-label="логин">
-      <input type="text" class="form-control" v-model="email" />
+      <input type="text" class="input" v-model="email" />
       <span v-if="errors.email" class="error">{{ errors.email }}</span>
     </div>
     <div class="input-wrapper mb-3" data-label="пароль">
-      <input type="text" class="form-control" v-model="password" />
+      <input type="text" class="input" v-model="password" />
       <span v-if="errors.password" class="error">{{ errors.password }}</span>
     </div>
-    <button class="btn btn-primary" :disabled="requestPending">
+    <button class="button" :disabled="requestPending">
       <div v-if="requestPending" class="spinner-border text-white spinner-border-sm" />
       <span v-else>войти</span>
     </button>

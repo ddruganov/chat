@@ -1,0 +1,21 @@
+.button {
+  background: $blue;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid $blue;
+  border-radius: $border-radius;
+
+  &:hover {
+    border: 1px solid $dark-blue;
+    background: $dark-blue;
+  }
+
+  &:active {
+    border: 1px solid $darker-blue;
+    background: $darker-blue;
+  }
+
+  * {
+    color: $white;
+  }
+}
