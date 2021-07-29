@@ -1,4 +1,4 @@
 export default interface From {
-    alias: string;
+    alias?: string;
     tableName: string;
 };

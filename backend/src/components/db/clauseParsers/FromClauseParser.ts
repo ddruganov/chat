@@ -12,6 +12,10 @@ export default class FromClauseParser extends ClauseParser {
     }
 
     public parse(): string {
+        if (!this.from.alias) {
+            return StringHelper.escape(this.from.tableName);
+        }
+
         return [StringHelper.escape(this.from.tableName), 'as', StringHelper.escape(this.from.alias)].join(' ').trim();
     }
 }

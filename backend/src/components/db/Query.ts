@@ -31,7 +31,7 @@ export default class Query {
         this._db = new Client(databaseConfig);
         this._db.connect((err) => {
             err && console.log('pg connection error:', err.message, err.stack);
-        })
+        });
     }
 
     public select(value: Select) {
@@ -101,12 +101,21 @@ export default class Query {
 
     public async all() {
         this.build();
-        const data = await this._db.query(this.sql);
-        if (!data.rowCount) {
+        const res = await this._db.query(this.sql);
+        if (!res.rowCount) {
             return undefined;
         }
 
-        return data.rows;
+        const rows = res.rows;
+        for (const entry of rows) {
+            for (const key in entry) {
+                if (entry[key] instanceof Date) {
+                    entry[key] = entry[key].toISOString().split('T').map((piece: string) => piece.split('.')[0]).join(' ');
+                }
+            }
+        }
+
+        return rows;
     }
 
     public async one() {

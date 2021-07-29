@@ -6,6 +6,9 @@ import AuthController from "./controllers/AuthController";
 import cors from "cors";
 import bodyParser from "body-parser";
 import cookies from "cookie-parser";
+import User from "./models/user/User";
+import DateHelper from "./components/helpers/DateHelper";
+import Command from "./components/db/Command";
 
 const app = express();
 const http = require("http").Server(app);
@@ -25,7 +28,32 @@ app.use(cors({
     credentials: true
 }));
 
-app.use('/auth', AuthController);
+app.use('/', async (req, res, next) => {
+
+    const newUser = new User();
+    newUser.email = 'dd123123@fakeacc.ru';
+    newUser.name = 'fake acc';
+    newUser.password = 'fake pass';
+    newUser.signupDate = DateHelper.now();
+    console.log('before save', newUser);
+    const saveSuccess = await newUser.save();
+    console.log('save success?', saveSuccess);
+    console.log('after save', newUser);
+
+    // const model = new User();
+    // model.
+
+    // const user = (await User.findOne({ left: 'id', value: '=', right: 1 }))!;
+    // user.password = 'testiscsche';
+    // const success = await user?.save();
+    // console.log(success);
+
+    // console.log(new User().save());
+
+    next();
+});
+
+// app.use('/auth', AuthController);
 
 // io.on("connection", function (socket: Socket) {
 

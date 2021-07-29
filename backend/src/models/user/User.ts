@@ -1,15 +1,6 @@
-import Where from "../../components/db/clauses/where/Where";
-import Query from "../../components/db/Query";
+import ActiveRecord from "../../components/db/ActiveRecord";
 
-type UserData = {
-    id: number;
-    email: string;
-    password: string;
-    name: string;
-    signupDate: string;
-};
-
-export default class User {
+export default class User extends ActiveRecord {
 
     private _id: number;
     private _email: string;
@@ -21,46 +12,8 @@ export default class User {
         return 'user.user';
     }
 
-    public static get columns() {
+    public static columns() {
         return ['id', 'email', 'password', 'name', 'signup_date'];
-    }
-
-    public static async findAll(condition: Where): Promise<User[] | undefined> {
-        let select = {} as { [key: string]: string };
-        this.columns.forEach(column => {
-            select[column] = '_' + column;
-        });
-
-        const data = await new Query()
-            .select(select)
-            .from({ alias: 'u', tableName: User.tableName() })
-            .where(condition)
-            .all();
-
-        if (!data) {
-            return undefined;
-        }
-
-        return data.map(userData => Object.assign(new User(), userData));
-    }
-
-    public static async findOne(condition: Where): Promise<User | undefined> {
-        let select = {} as { [key: string]: string };
-        this.columns.forEach(column => {
-            select[column] = '_' + column;
-        });
-
-        const data = await new Query()
-            .select(select)
-            .from({ alias: 'u', tableName: User.tableName() })
-            .where(condition)
-            .one();
-
-        if (!data) {
-            return undefined;
-        }
-
-        return Object.assign(new User(), data);
     }
 
     public get id() {
@@ -70,4 +23,21 @@ export default class User {
     public get signupDate() {
         return this._signup_date;
     }
+
+    public set email(value: string) {
+        this._email = value;
+    }
+
+    public set password(value: string) {
+        this._password = value;
+    }
+
+    public set name(value: string) {
+        this._name = value;
+    }
+
+    public set signupDate(value: string) {
+        this._signup_date = value;
+    }
+
 }
