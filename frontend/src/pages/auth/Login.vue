@@ -14,6 +14,9 @@
       <div v-if="requestPending" class="spinner-border text-white spinner-border-sm" />
       <span v-else>войти</span>
     </button>
+    <button class="button" type="button" @click="getCurrentUser">
+      get current user
+    </button>
   </form>
 </template>
 
@@ -60,6 +63,18 @@ export default class AuthLogin extends Vue {
       .finally(() => {
         this.requestPending = false;
       });
+  }
+
+  private getCurrentUser() {
+    Api.auth
+      .getCurrentUser()
+      .then((response) => {
+        if (!response.success) {
+          this.errors = response.data.errors;
+          return;
+        }
+      })
+      .catch((e) => this.$notifications.error("Ошибка авторизации<br>" + e.message));
   }
 }
 </script>

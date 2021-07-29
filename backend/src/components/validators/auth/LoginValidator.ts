@@ -7,6 +7,13 @@ export default class LoginValidator extends BaseValidator {
     private email: string;
     private password: string;
 
+    public get loginData(): LoginData {
+        return {
+            email: this.email,
+            password: this.password
+        }
+    }
+
     constructor(loginData: LoginData) {
         super();
 

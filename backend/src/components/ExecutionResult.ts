@@ -1,5 +1,5 @@
 type Errors = {
-    [key: string]: string;
+    [key: string]: string | number;
 };
 
 export default class ExecutionResult {

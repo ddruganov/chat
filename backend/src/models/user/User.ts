@@ -63,6 +63,10 @@ export default class User {
         return Object.assign(new User(), data);
     }
 
+    public get id() {
+        return this._id;
+    }
+
     public get signupDate() {
         return this._signup_date;
     }

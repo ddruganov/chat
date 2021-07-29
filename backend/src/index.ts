@@ -5,6 +5,7 @@ import express from "express";
 import AuthController from "./controllers/AuthController";
 import cors from "cors";
 import bodyParser from "body-parser";
+import cookies from "cookie-parser";
 
 const app = express();
 const http = require("http").Server(app);
@@ -15,9 +16,10 @@ const io = require("socket.io")(http, {
 });
 
 app.use(bodyParser.json())
+app.use(cookies())
 
 app.use(cors({
-    allowedHeaders: ['Origin', 'Accept', 'Authorization', 'Access-Control-Allow-Headers', 'Origin', 'Accept-Encoding', 'X-Requested-With', 'Content-Type', 'Access-Control-Request-Method', 'Access-Control-Request-Headers', 'X-Auth-Token', 'Accept-Language', 'Cache-Control', 'Connection', 'Host', 'Pragma', 'Referer'],
+    allowedHeaders: ['Origin', 'Accept', 'Authorization', 'Access-Control-Allow-Headers', 'Origin', 'Accept-Encoding', 'X-Requested-With', 'Content-Type', 'Access-Control-Request-Method', 'Access-Control-Request-Headers', 'X-Access-Token', 'Accept-Language', 'Cache-Control', 'Connection', 'Host', 'Pragma', 'Referer'],
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
     origin: true,
     credentials: true

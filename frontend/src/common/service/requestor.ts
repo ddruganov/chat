@@ -13,7 +13,7 @@ export default class Requestor {
       method: "POST",
       credentials: "include",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(form),
     };
