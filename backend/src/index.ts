@@ -9,6 +9,7 @@ import cookies from "cookie-parser";
 import User from "./models/user/User";
 import DateHelper from "./components/helpers/DateHelper";
 import Command from "./components/db/Command";
+import { DateTime } from "luxon";
 
 const app = express();
 const http = require("http").Server(app);
@@ -22,44 +23,20 @@ app.use(bodyParser.json())
 app.use(cookies())
 
 app.use(cors({
-    allowedHeaders: ['Origin', 'Accept', 'Authorization', 'Access-Control-Allow-Headers', 'Origin', 'Accept-Encoding', 'X-Requested-With', 'Content-Type', 'Access-Control-Request-Method', 'Access-Control-Request-Headers', 'X-Access-Token', 'Accept-Language', 'Cache-Control', 'Connection', 'Host', 'Pragma', 'Referer'],
+    allowedHeaders: ['Origin', 'Accept', 'Authorization', 'Access-Control-Allow-Headers', 'Origin', 'Accept-Encoding', 'X-Requested-With', 'Content-Type', 'Access-Control-Request-Method', 'Access-Control-Request-Headers', 'X-Access-Token', 'X-Refresh-Token', 'Accept-Language', 'Cache-Control', 'Connection', 'Host', 'Pragma', 'Referer'],
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
     origin: true,
     credentials: true
 }));
 
+app.use('/auth', AuthController);
+
 app.use('/', async (req, res, next) => {
 
-    const deleteSuccess = await new Command().delete().from({ tableName: User.tableName() }).where({
-        left: 'id', value: '>', right: 2
-    })
-        .execute();
-    console.log('delete success:', deleteSuccess);
-
-    // const newUser = new User();
-    // newUser.email = 'dd123123@fakeacc.ru';
-    // newUser.name = 'fake acc';
-    // newUser.password = 'fake pass';
-    // newUser.signupDate = DateHelper.now();
-    // console.log('before save', newUser);
-    // const saveSuccess = await newUser.save();
-    // console.log('save success?', saveSuccess);
-    // console.log('after save', newUser);
-
-    // const model = new User();
-    // model.
-
-    // const user = (await User.findOne({ left: 'id', value: '=', right: 1 }))!;
-    // user.password = 'testiscsche';
-    // const success = await user?.save();
-    // console.log(success);
-
-    // console.log(new User().save());
+    // console.log(DateHelper.nowAsDate());
 
     next();
 });
-
-// app.use('/auth', AuthController);
 
 // io.on("connection", function (socket: Socket) {
 

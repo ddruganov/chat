@@ -65,7 +65,7 @@ export default class ActiveRecord {
             .execute();
     }
 
-    public static async findOne<T extends typeof ActiveRecord>(condition: Where): Promise<InstanceType<T> | undefined> {
+    public static async findOne<T extends ActiveRecord>(condition: Where): Promise<T | undefined> {
         let select: Select = {};
         this.columns().forEach(column => {
             select[column] = '_' + column;
@@ -81,7 +81,7 @@ export default class ActiveRecord {
             return undefined;
         }
 
-        const model = Object.assign(new this(), data);
+        const model = Object.assign(new this(), data) as T;
         model._isNew = false;
 
         return model;
