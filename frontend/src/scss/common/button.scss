@@ -4,6 +4,7 @@
   padding: 0.5rem 1rem;
   border: 1px solid $blue;
   border-radius: $border-radius;
+  transition: 0.25s all linear;
 
   &:hover {
     border: 1px solid $dark-blue;
@@ -17,5 +18,10 @@
 
   * {
     color: $white;
+  }
+
+  &:disabled {
+    opacity: 0.75;
+    pointer-events: none;
   }
 }

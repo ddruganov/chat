@@ -12,6 +12,10 @@ export default class ActiveRecord {
         return this._isNew;
     }
 
+    public constructor(config: { [key: string]: any } = {}) {
+        Object.assign(this, config);
+    }
+
     public get static() {
         return this.constructor as typeof ActiveRecord;
     }

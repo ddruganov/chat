@@ -1,1 +1,1 @@
-export const INVALID_AUTH = 0;
+export const INVALID_AUTH = 401;

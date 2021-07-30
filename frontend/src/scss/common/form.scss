@@ -6,7 +6,7 @@
     border: 1px solid $gray;
     border-radius: $border-radius;
     outline: none;
-    transition: 0.5s all linear;
+    transition: 0.25s all linear;
     width: 100%;
     &:focus,
     &:focus-visible,
@@ -23,7 +23,7 @@
     left: 10px;
     background: $white;
     color: $gray;
-    transition: 0.5s all linear;
+    transition: 0.25s all linear;
     pointer-events: none;
   }
 

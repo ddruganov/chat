@@ -20,8 +20,16 @@ export default class User extends ActiveRecord {
         return this._id;
     }
 
+    public get name() {
+        return this._name;
+    }
+
     public get signupDate() {
         return this._signup_date;
+    }
+
+    public set id(value: number) {
+        this._id = value;
     }
 
     public set email(value: string) {

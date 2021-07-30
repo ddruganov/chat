@@ -46,8 +46,6 @@ export default class UpdateCommand {
 
         this.sql = 'update ' + StringHelper.escape(this._tableName) + ' set ' + set.join(', ');
         this._where && (this.sql += ' where ' + new WhereClauseParser(this._where).parse());
-
-        console.log(this.sql);
     }
 
     public async execute() {
@@ -57,7 +55,6 @@ export default class UpdateCommand {
             await this._db.query(this.sql);
         }
         catch (e) {
-            console.log(e.message);
             return false;
         }
 

@@ -12,6 +12,10 @@ export default class StringHelper {
     }
 
     public static isTableName(data: string) {
-        return /^[a-z]+.[a-z]+$/.test(data) && data.split('.').length > 1;
+
+        const regex = (data.match(/\w+.?\w+/) || [])[0] === data;
+        const splitLength = data.split('.').length;
+
+        return regex && splitLength > 1;
     }
 }
