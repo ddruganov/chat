@@ -30,15 +30,21 @@ app.use(cors({
 
 app.use('/', async (req, res, next) => {
 
-    const newUser = new User();
-    newUser.email = 'dd123123@fakeacc.ru';
-    newUser.name = 'fake acc';
-    newUser.password = 'fake pass';
-    newUser.signupDate = DateHelper.now();
-    console.log('before save', newUser);
-    const saveSuccess = await newUser.save();
-    console.log('save success?', saveSuccess);
-    console.log('after save', newUser);
+    const deleteSuccess = await new Command().delete().from({ tableName: User.tableName() }).where({
+        left: 'id', value: '>', right: 2
+    })
+        .execute();
+    console.log('delete success:', deleteSuccess);
+
+    // const newUser = new User();
+    // newUser.email = 'dd123123@fakeacc.ru';
+    // newUser.name = 'fake acc';
+    // newUser.password = 'fake pass';
+    // newUser.signupDate = DateHelper.now();
+    // console.log('before save', newUser);
+    // const saveSuccess = await newUser.save();
+    // console.log('save success?', saveSuccess);
+    // console.log('after save', newUser);
 
     // const model = new User();
     // model.
