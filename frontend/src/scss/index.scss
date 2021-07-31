@@ -1,7 +1,6 @@
-@import "common/colors.scss";
-@import "common/variables.scss";
-@import "common/button.scss";
-@import "common/form.scss";
+@import "common";
+@import "layout";
+@import "widgets";
 
 * {
   color: $black;

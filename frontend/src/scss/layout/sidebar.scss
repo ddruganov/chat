@@ -1,0 +1,52 @@
+.sidebar {
+  width: 250px;
+  position: absolute;
+  height: 100%;
+  z-index: 2;
+  background: $white;
+  border-right: 1px solid $light-gray;
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid $light-gray;
+    position: relative;
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+
+      * {
+        font-size: 16px;
+        color: $blue;
+        cursor: pointer;
+        &:hover {
+          color: $dark-blue;
+        }
+      }
+    }
+  }
+  .rooms {
+    .room {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      * {
+        cursor: pointer;
+      }
+
+      & > .name {
+        color: $blue;
+      }
+
+      padding: 1rem;
+      border-bottom: 1px solid $light-gray;
+
+      &.active,
+      &:hover {
+        background-color: rgba($blue, 0.125);
+      }
+    }
+  }
+}

@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer bg-light border-top p-3">
+  <footer class="footer">
     <span class="text-muted">{{ fullYear }} pAcc</span>
   </footer>
 </template>

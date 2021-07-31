@@ -1,0 +1,41 @@
+.topbar {
+  background: $white;
+  min-height: $topbar-height;
+  height: $topbar-height;
+  max-height: $topbar-height;
+
+  border-bottom-left-radius: $border-radius-smooth;
+  border-bottom-right-radius: $border-radius-smooth;
+
+  .sidebar-toggler {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: $blue;
+    transition: 0.25s all linear;
+    left: 1rem;
+    top: 1rem;
+    cursor: pointer;
+    * {
+      cursor: pointer;
+    }
+    &:hover {
+      color: $dark-blue;
+    }
+  }
+
+  .open-room {
+    & > .name {
+      font-weight: bold;
+      font-size: 14px;
+      letter-spacing: 0.05rem;
+      margin-left: 1rem;
+    }
+    & > .user-count {
+      margin-left: 1rem;
+    }
+  }
+}

@@ -55,6 +55,7 @@ export default class UpdateCommand {
             await this._db.query(this.sql);
         }
         catch (e) {
+            console.log(e.message);
             return false;
         }
 

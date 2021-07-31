@@ -1,6 +1,10 @@
 <template>
-  <header class="navbar navbar-expand-lg navbar-dark bg-dark p-3">
-    <div class="text-white">{{ authenticatedUser.name }}</div>
+  <header class="topbar navbar navbar-expand-lg p-3">
+    <i class="sidebar-toggler fas fa-bars" @click.prevent="() => toggleSidebar()" />
+    <div v-if="currentRoom" class="open-room">
+      <span class="name">{{ currentRoom.name }}</span>
+      <span class="user-count text-muted">({{ currentRoom.users.map((u) => u.name).join(", ") }})</span>
+    </div>
   </header>
 </template>
 
@@ -8,11 +12,26 @@
 
 <script lang="ts">
 import { authStore } from "@/store/modules/auth.store";
+import { messageStore } from "@/store/modules/message.store";
 import { Vue } from "vue-class-component";
 
 export default class Topbar extends Vue {
+  showSidebar = false;
+
   get authenticatedUser() {
     return authStore.context(this.$store).getters.authenticatedUser;
+  }
+
+  get currentRoomId() {
+    return Number(this.$route.params.roomId);
+  }
+
+  get currentRoom() {
+    return messageStore.context(this.$store).state.rooms.find((r) => r.id === this.currentRoomId);
+  }
+
+  toggleSidebar() {
+    this.$emit("toggleSidebar");
   }
 }
 </script>

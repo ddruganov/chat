@@ -1,0 +1,21 @@
+.auth-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  user-select: none;
+  .content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .login-wrapper {
+      width: 100%;
+      max-width: 345px;
+      display: flex;
+      flex-direction: column;
+      border-radius: $border-radius-smooth;
+      padding: 3rem;
+      background: $white;
+    }
+  }
+}

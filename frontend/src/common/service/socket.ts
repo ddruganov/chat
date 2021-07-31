@@ -5,6 +5,10 @@ import { io } from "socket.io-client";
 
 const socket = io("http://localhost:3000");
 
+window.addEventListener('beforeunload', () => {
+    socket.emit('connection.close', { userId: authStore.context(store).getters.authenticatedUser.id });
+});
+
 socket.on("room.message", (data) => {
     // messageStore.context(store).dispatch()
     // // messages.push({

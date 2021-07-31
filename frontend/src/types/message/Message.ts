@@ -2,7 +2,7 @@ type Message = {
   id: number;
   creationDate: string;
   userId: number;
-  contents: number;
+  contents: string;
   roomId: number;
 };
 export default Message;

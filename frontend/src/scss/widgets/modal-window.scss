@@ -1,0 +1,18 @@
+.modal-window {
+  .modal {
+    background: rgba($black, 0.5);
+    display: block;
+    .close-icon {
+      font-size: 1.25rem;
+      color: $gray;
+      cursor: pointer;
+      &:hover {
+        color: $black;
+      }
+    }
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}

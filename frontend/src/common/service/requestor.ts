@@ -30,7 +30,7 @@ export default class Requestor {
               break;
             case 401:
               authStore.context(store).dispatch(SET_AUTHENTICATED, false);
-              router.push({ path: "/auth/login" });
+              window.location.href = '/auth/login';
               break;
           }
         }

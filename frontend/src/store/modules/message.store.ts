@@ -6,7 +6,6 @@ import Room from "@/types/message/Room";
 // State
 class MessageState {
   rooms: Room[] = [];
-  messages: Message[] = [];
 }
 
 // Getters
@@ -15,16 +14,31 @@ class MessageGetters extends Getters<MessageState> {
 
 // Actions
 export const LOAD_ROOMS = 'loadRooms';
+export const LOAD_ROOM_MESSAGES = 'loadRoomMessage';
 export const RECEIVE_MESSAGE = "receiveMessage";
 class MessageActions extends Actions<MessageState, MessageGetters, MessageMutations, MessageActions> {
   [LOAD_ROOMS]() {
-    Api.message.loadRooms().then((response) => {
+    return Api.message.loadRooms().then((response) => {
       if (!response.success) {
         throw new Error(response.error);
       }
 
       this.state.rooms = response.data;
+    })
+      .catch((e: Error) => console.log(e.message));
+  }
+  [LOAD_ROOM_MESSAGES](id: number) {
+    const room = this.state.rooms.find(r => r.id === id)!;
+    if (room.messages.length) {
+      return;
+    }
 
+    Api.message.loadRoomMessages(id).then((response) => {
+      if (!response.success) {
+        throw new Error(response.error);
+      }
+
+      room.messages = response.data;
     })
       .catch((e: Error) => console.log(e.message));
   }
@@ -37,7 +51,12 @@ class MessageActions extends Actions<MessageState, MessageGetters, MessageMutati
 // Mutations
 class MessageMutations extends Mutations<MessageState> {
   [RECEIVE_MESSAGE](payload: Message) {
-    this.state.messages.push(payload);
+    const room = this.state.rooms.find(r => r.id === payload.roomId);
+    if (!room) {
+      return;
+    }
+
+    room.messages.push(payload);
   }
 }
 

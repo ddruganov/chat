@@ -28,6 +28,16 @@ export default class ActiveRecord {
         throw new Error('Not implemented!');
     }
 
+    public setAttributes(attributes: { [key: string]: any }) {
+
+        for (const key in attributes) {
+            attributes['_' + key] = attributes[key];
+            delete (attributes[key]);
+        }
+
+        Object.assign(this, attributes);
+    }
+
     public async save(): Promise<boolean> {
 
         const data = {} as ActiveRecord;
