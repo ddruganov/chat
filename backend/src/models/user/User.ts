@@ -7,13 +7,14 @@ export default class User extends ActiveRecord {
     private _password: string;
     private _name: string;
     private _signup_date: string;
+    private _last_seen: string | null;
 
     public static tableName() {
         return 'user.user';
     }
 
     public static columns() {
-        return ['id', 'email', 'password', 'name', 'signup_date'];
+        return ['id', 'email', 'password', 'name', 'signup_date', 'last_seen'];
     }
 
     public get id() {
@@ -26,6 +27,10 @@ export default class User extends ActiveRecord {
 
     public get signupDate() {
         return this._signup_date;
+    }
+
+    public get lastSeen() {
+        return this._last_seen;
     }
 
     public set id(value: number) {
@@ -48,4 +53,7 @@ export default class User extends ActiveRecord {
         this._signup_date = value;
     }
 
+    public set lastSeen(value: string | null) {
+        this._last_seen = value;
+    }
 }

@@ -17,6 +17,14 @@
         background: rgba($blue, 0.125);
         margin-bottom: 1rem;
 
+        .contents {
+          margin-bottom: 0.25rem;
+        }
+        .creation-date {
+          color: $gray;
+          font-size: 0.7rem;
+        }
+
         &.my {
           background: rgba($red, 0.125);
           margin-left: auto;

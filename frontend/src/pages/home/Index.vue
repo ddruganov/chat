@@ -8,7 +8,8 @@
           :key="message.id"
           :class="{ my: message.userId === authenticatedUser.id }"
         >
-          {{ message.contents }}
+          <div class="contents">{{ message.contents }}</div>
+          <div class="creation-date">{{ message.creationDate }}</div>
         </div>
       </div>
       <form class="new-message" @submit.prevent="() => sendMessage()">

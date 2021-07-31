@@ -1,5 +1,4 @@
-// import { Socket } from "socket.io";
-// import Command from "./components/db/Command";
+import { Socket } from "socket.io";
 
 import express from "express";
 import AuthController from "./controllers/AuthController";
@@ -8,6 +7,8 @@ import bodyParser from "body-parser";
 import cookies from "cookie-parser";
 import MessageController from "./controllers/MessageController";
 import SettingsController from "./controllers/SettingsController";
+import User from "./models/user/User";
+import DateHelper from "./components/helpers/DateHelper";
 
 const app = express();
 const http = require("http").Server(app);
@@ -31,44 +32,61 @@ app.use('/auth', AuthController);
 app.use('/message', MessageController);
 app.use('/settings', SettingsController);
 
-// io.on("connection", function (socket: Socket) {
+io.on("connection", function (socket: Socket) {
 
-//     console.log("A user with ID: " + socket.id + " connected");
+    socket.on('connection.handshake', async (data) => {
+        const user = await User.findOne<User>({ left: 'id', value: '=', right: data.userId });
 
-//     socket.on("disconnect", function () {
-//         console.log("A user with ID: " + socket.id + " disconnected");
-//     });
+        if (!user) {
+            socket.disconnect(true);
+            return;
+        }
 
-//     // More Socket listening here.
-//     if (io.sockets.connected) socket.emit("connections", Object.keys(io.sockets.connected).length);
-//     else socket.emit("connections", 0);
+        user.lastSeen = null;
+        await user.save();
+    });
 
-//     socket.on("chat-message", async (message) => {
-//         await new Command("INSERT INTO messages (message, user_id, name) VALUES ($1, $2, $3)", [message.message, socket.id, message.user]).execute();
-//         socket.broadcast.emit("chat-message", message);
-//     });
+    socket.on("connection.close", async (data) => {
+        const user = await User.findOne<User>({ left: 'id', value: '=', right: data.userId });
 
-//     socket.on("typing", (data) => {
-//         socket.broadcast.emit("typing", data);
-//     });
+        if (!user) {
+            return;
+        }
 
-//     socket.on("stopTyping", () => {
-//         socket.broadcast.emit("stopTyping");
-//     });
+        user.lastSeen = DateHelper.now().toUTCString();
+        await user.save();
+    });
 
-//     socket.on("joined", async (name) => {
-//         let messageData = null;
-//         const res = await new Command("insert into users (name, user_id) values ($1, $2)", [name, socket.id]).execute();
-//         if (res.rowCount) {
-//             messageData = await new Command("select * from messages where name = $1", [name]).execute();
-//         }
-//         socket.broadcast.emit("joined", messageData?.rows);
-//     });
+    // More Socket listening here.
+    // if (io.sockets.connected) socket.emit("connections", Object.keys(io.sockets.connected).length);
+    // else socket.emit("connections", 0);
 
-//     socket.on("leave", (data) => {
-//         socket.broadcast.emit("leave", data);
-//     });
-// });
+    // socket.on("chat-message", async (message) => {
+    //     await new Command("INSERT INTO messages (message, user_id, name) VALUES ($1, $2, $3)", [message.message, socket.id, message.user]).execute();
+    //     socket.broadcast.emit("chat-message", message);
+    // });
+
+    // socket.on("typing", (data) => {
+    //     socket.broadcast.emit("typing", data);
+    // });
+
+    // socket.on("stopTyping", () => {
+    //     socket.broadcast.emit("stopTyping");
+    // });
+
+    // socket.on("joined", async (name) => {
+    //     let messageData = null;
+    //     const res = await new Command("insert into users (name, user_id) values ($1, $2)", [name, socket.id]).execute();
+    //     if (res.rowCount) {
+    //         messageData = await new Command("select * from messages where name = $1", [name]).execute();
+    //     }
+    //     socket.broadcast.emit("joined", messageData?.rows);
+    // });
+
+    // socket.on("leave", (data) => {
+    //     socket.broadcast.emit("leave", data);
+    // });
+});
 
 http.listen(3000, () => {
     console.log("Listening on port localhost:3000");
