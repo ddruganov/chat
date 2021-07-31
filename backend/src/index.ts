@@ -8,6 +8,7 @@ import bodyParser from "body-parser";
 import cookies from "cookie-parser";
 import StringHelper from "./components/helpers/StringHelper";
 import User from "./models/user/User";
+import MessageController from "./controllers/MessageController";
 
 const app = express();
 const http = require("http").Server(app);
@@ -28,6 +29,7 @@ app.use(cors({
 }));
 
 app.use('/auth', AuthController);
+app.use('/message', MessageController);
 
 // app.use('/', (req, res, next) => {
 

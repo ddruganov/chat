@@ -1,8 +1,8 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import ExecutionResult from "../../../components/ExecutionResult";
 import { INVALID_AUTH } from "../../../config/codes";
-import CurrentUserCollector from "../../../collectors/user/CurrentUserCollector";
 import TokenHelper from "../../../components/helpers/TokenHelper";
+import RoomAllCollector from "../../../collectors/message/RoomAllCollector";
 
 export default async function (req: Request, res: Response) {
     const user = await TokenHelper.check(req, res);
@@ -10,6 +10,6 @@ export default async function (req: Request, res: Response) {
         return res.send(new ExecutionResult(false, {}, {}, INVALID_AUTH).asJson());
     }
 
-    const collectorData = new CurrentUserCollector().setUser(user).get();
-    res.send(new ExecutionResult(true, { user: collectorData }).asJson());
+    const collectorData = await new RoomAllCollector().setUser(user).get();
+    res.send(new ExecutionResult(true, collectorData).asJson());
 }

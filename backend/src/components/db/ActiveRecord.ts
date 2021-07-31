@@ -90,4 +90,30 @@ export default class ActiveRecord {
 
         return model;
     }
+
+    public static async findAll<T extends ActiveRecord>(condition: Where): Promise<T[] | undefined> {
+        let select: Select = {};
+        this.columns().forEach(column => {
+            select[column] = '_' + column;
+        });
+
+        const data = await new Query()
+            .select(select)
+            .from({ tableName: this.tableName() })
+            .where(condition)
+            .all();
+
+        if (!data) {
+            return undefined;
+        }
+
+        const models: T[] = [];
+        for (const row of data) {
+            const model = Object.assign(new this(), row) as T;
+            model._isNew = false;
+            models.push(model);
+        }
+
+        return models;
+    }
 }

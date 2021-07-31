@@ -3,57 +3,38 @@
     <h3 class="m-0">Домашняя страница</h3>
   </div>
 
-  <div class="bg-white rounded-10 p-3">
-    <div class="container">
-      <div class="col-lg-6 offset-lg-3">
-        <div v-if="ready">
-          <p v-for="(user, i) in info" :key="i">{{ user.username }} {{ user.type }}</p>
-        </div>
-
-        <div v-if="!ready">
-          <h4>Enter your username</h4>
-          <form @submit.prevent="addUser()">
-            <div class="form-group row">
-              <input type="text" class="form-control col-9" v-model="username" placeholder="Enter username here" />
-              <input type="submit" value="Join" class="btn btn-sm btn-info ml-1" />
-            </div>
-          </form>
-        </div>
-        <h2 v-else>{{ username }}</h2>
-        <div class="card bg-info" v-if="ready">
-          <div class="card-header text-white">
-            <h4>
-              My Chat App
-              <span class="float-right">{{ connections }} connections</span>
-            </h4>
-          </div>
-          <ul class="list-group list-group-flush text-right">
-            <small v-if="typing" class="text-white">{{ typing }} is typing</small>
-            <li class="list-group-item" v-for="(message, i) in messages" :key="i">
-              <span :class="{ 'float-left': message.type === 1 }">
-                {{ message.message }}
-                <small>:{{ message.user }}</small>
-              </span>
-            </li>
-          </ul>
-
-          <div class="card-body">
-            <form @submit.prevent="send()">
-              <div class="form-group">
-                <input type="text" class="form-control" v-model="newMessage" placeholder="Enter message here" />
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+  <div class="bg-white rounded-10 p-3 rooms">
+    currently open: {{ currentRoomId }}
+    <div v-for="room in rooms" :key="room.id" class="room rounded-10" @click="() => openRoom(room.id)">
+      {{ room.name }}
     </div>
   </div>
 </template>
 
+<style lang="scss" scoped>
+.rooms {
+  display: flex;
+  flex-direction: column;
+  .room {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 1rem;
+    cursor: pointer;
+    * {
+      cursor: pointer;
+    }
+    &:hover {
+      background: #eee;
+    }
+  }
+}
+</style>
+
 <script lang="ts">
+import { LOAD_ROOMS, messageStore } from "@/store/modules/message.store";
 import { io, Socket } from "socket.io-client";
 import { Vue } from "vue-class-component";
-// import { Watch } from "vue-property-decorator";
 
 type Message = {
   message: string;
@@ -76,77 +57,89 @@ export default class HomeIndex extends Vue {
   private messages: Message[] = [];
   private username = "";
 
-  // @Watch("newMessage") onNewMessageChanged(newMessage: string, preNewMessage: any) {
-  //   newMessage ? this.socket.emit("typing", this.username) : this.socket.emit("stopTyping");
-  // }
+  get currentRoomId() {
+    return Number(this.$route.params.roomId);
+  }
+
+  get rooms() {
+    return messageStore.context(this.$store).state.rooms;
+  }
 
   mounted() {
-    window.onbeforeunload = () => {
-      this.socket.emit("leave", this.username);
-    };
-
-    this.socket.on("chat-message", (data) => {
-      this.messages.push({
-        message: data.message,
-        type: 1,
-        user: data.user,
-      });
-    });
-
-    this.socket.on("typing", (data) => {
-      this.typing = data;
-    });
-
-    this.socket.on("stopTyping", () => {
-      this.typing = false;
-    });
-
-    this.socket.on("joined", (data) => {
-      this.info.push({
-        username: data.name,
-        type: "joined",
-      });
-
-      this.messages.push(...data.messages);
-
-      setTimeout(() => {
-        this.info.length = 0;
-      }, 5000);
-    });
-
-    this.socket.on("leave", (data) => {
-      this.info.push({
-        username: data,
-        type: "left",
-      });
-
-      setTimeout(() => {
-        this.info.length = 0;
-      }, 5000);
-    });
-
-    this.socket.on("connections", (data) => {
-      this.connections = data;
-    });
+    messageStore.context(this.$store).dispatch(LOAD_ROOMS);
   }
 
-  private send() {
-    this.messages.push({
-      message: this.newMessage,
-      type: 0,
-      user: "Me",
-    });
-
-    this.socket.emit("chat-message", {
-      message: this.newMessage,
-      user: this.username,
-    });
-    this.newMessage = "";
+  private openRoom(roomId: number) {
+    this.$router.push({ path: `/room/${roomId}` });
   }
 
-  private addUser() {
-    this.ready = true;
-    this.socket.emit("joined", this.username);
-  }
+  // mounted() {
+  //   window.onbeforeunload = () => {
+  //     this.socket.emit("leave", this.username);
+  //   };
+
+  //   this.socket.on("chat-message", (data) => {
+  //     this.messages.push({
+  //       message: data.message,
+  //       type: 1,
+  //       user: data.user,
+  //     });
+  //   });
+
+  //   this.socket.on("typing", (data) => {
+  //     this.typing = data;
+  //   });
+
+  //   this.socket.on("stopTyping", () => {
+  //     this.typing = false;
+  //   });
+
+  //   this.socket.on("joined", (data) => {
+  //     this.info.push({
+  //       username: data.name,
+  //       type: "joined",
+  //     });
+
+  //     this.messages.push(...data.messages);
+
+  //     setTimeout(() => {
+  //       this.info.length = 0;
+  //     }, 5000);
+  //   });
+
+  //   this.socket.on("leave", (data) => {
+  //     this.info.push({
+  //       username: data,
+  //       type: "left",
+  //     });
+
+  //     setTimeout(() => {
+  //       this.info.length = 0;
+  //     }, 5000);
+  //   });
+
+  //   this.socket.on("connections", (data) => {
+  //     this.connections = data;
+  //   });
+  // }
+
+  // private send() {
+  //   this.messages.push({
+  //     message: this.newMessage,
+  //     type: 0,
+  //     user: "Me",
+  //   });
+
+  //   this.socket.emit("chat-message", {
+  //     message: this.newMessage,
+  //     user: this.username,
+  //   });
+  //   this.newMessage = "";
+  // }
+
+  // private addUser() {
+  //   this.ready = true;
+  //   this.socket.emit("joined", this.username);
+  // }
 }
 </script>

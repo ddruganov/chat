@@ -37,7 +37,7 @@ import { authStore, GET_CURRENT_USER } from "@/store/modules/auth.store";
   components: { Topbar, Footer },
 })
 export default class MainLayout extends Vue {
-  dataLoaded = true;
+  dataLoaded = false;
 
   mounted() {
     this.load();
