@@ -15,6 +15,7 @@ class MessageGetters extends Getters<MessageState> {
 // Actions
 export const LOAD_ROOMS = 'loadRooms';
 export const LOAD_ROOM_MESSAGES = 'loadRoomMessage';
+export const SEND_MESSAGE = "sendMessage";
 export const RECEIVE_MESSAGE = "receiveMessage";
 class MessageActions extends Actions<MessageState, MessageGetters, MessageMutations, MessageActions> {
   [LOAD_ROOMS]() {
@@ -43,6 +44,10 @@ class MessageActions extends Actions<MessageState, MessageGetters, MessageMutati
       .catch((e: Error) => console.log(e.message));
   }
 
+  [SEND_MESSAGE](payload: any) {
+    this.commit(SEND_MESSAGE, payload);
+  }
+
   [RECEIVE_MESSAGE](payload: Message): void {
     this.commit(RECEIVE_MESSAGE, payload);
   }
@@ -57,6 +62,10 @@ class MessageMutations extends Mutations<MessageState> {
     }
 
     room.messages.push(payload);
+  }
+
+  [SEND_MESSAGE](payload: any) {
+
   }
 }
 

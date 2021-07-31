@@ -102,6 +102,7 @@ export default class Query {
     public async all() {
         this.build();
         const res = await this._db.query(this.sql);
+        await this._db.end();
         if (!res.rowCount) {
             return undefined;
         }

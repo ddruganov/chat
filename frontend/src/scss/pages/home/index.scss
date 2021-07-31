@@ -1,0 +1,58 @@
+.chat-window {
+  flex: 1;
+  .block {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    .messages {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow-y: scroll;
+      .message {
+        width: 100%;
+        max-width: 375px;
+        padding: 1rem;
+        border-radius: $border-radius-smooth;
+        background: rgba($blue, 0.125);
+        margin-bottom: 1rem;
+
+        &.my {
+          background: rgba($red, 0.125);
+          margin-left: auto;
+        }
+      }
+    }
+
+    .new-message {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1rem;
+      .input-wrapper {
+        width: 100%;
+      }
+      .send {
+        font-size: 24px;
+        color: rgba($blue, 0.5);
+        cursor: pointer;
+        margin: 0 1rem;
+        height: 50px;
+        width: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &:hover {
+          color: $blue;
+        }
+      }
+    }
+  }
+
+  .no-room-selected {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

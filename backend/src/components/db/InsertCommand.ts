@@ -43,6 +43,7 @@ export default class InsertCommand {
 
         try {
             const res = await this._db.query(this.sql);
+            await this._db.end();
             if (!res.rowCount) {
                 throw new Error();
             }

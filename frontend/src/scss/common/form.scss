@@ -1,4 +1,5 @@
 .input-wrapper {
+  display: flex;
   position: relative;
 
   .input {
@@ -8,6 +9,7 @@
     outline: none;
     transition: 0.25s all linear;
     width: 100%;
+    resize: none;
     &:focus,
     &:focus-visible,
     &:focus-within {

@@ -53,6 +53,7 @@ export default class UpdateCommand {
 
         try {
             await this._db.query(this.sql);
+            await this._db.end();
         }
         catch (e) {
             return false;
