@@ -13,7 +13,7 @@ export default class RoomUser extends ActiveRecord {
         return 'message.room_user';
     }
 
-    public static columns() {
+    public static get columns() {
         return ['id', 'room_id', 'user_id', 'join_date'];
     }
 

@@ -10,7 +10,7 @@ export default class AccessToken extends ActiveRecord {
         return 'token.access_token';
     }
 
-    public static columns() {
+    public static get columns() {
         return ['id', 'value', 'is_blacklisted'];
     }
 

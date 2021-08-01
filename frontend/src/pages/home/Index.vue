@@ -1,7 +1,7 @@
 <template>
   <div class="chat-window my-5">
     <div v-if="currentRoomId && currentRoom" class="block">
-      <div class="messages">
+      <div class="messages" :key="reloadMessages">
         <div
           class="message"
           v-for="message in currentRoom.messages"
@@ -32,6 +32,7 @@ import { Vue } from "vue-class-component";
 
 export default class HomeIndex extends Vue {
   private message: string = "";
+  private reloadMessages: number = 0;
 
   get authenticatedUser() {
     return authStore.context(this.$store).getters.authenticatedUser;
@@ -45,12 +46,26 @@ export default class HomeIndex extends Vue {
     return messageStore.context(this.$store).state.rooms.find((r) => r.id === this.currentRoomId);
   }
 
+  mounted() {
+    this.$store.subscribeAction((action) => {
+      if (action.type === "message/reloadMessages") {
+        ++this.reloadMessages;
+      }
+    });
+  }
+
   private sendMessage() {
     if (!this.message.length) {
       return;
     }
 
-    messageStore.context(this.$store).dispatch(SEND_MESSAGE, { roomId: this.currentRoomId, contents: this.message });
+    messageStore.context(this.$store).dispatch(SEND_MESSAGE, {
+      roomId: this.currentRoomId,
+      userId: this.authenticatedUser.id,
+      contents: this.message,
+    });
+
+    this.message = "";
   }
 
   private handleKeyPress(e: KeyboardEvent) {

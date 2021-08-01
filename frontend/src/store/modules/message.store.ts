@@ -2,6 +2,7 @@ import { Getters, Mutations, Actions, Module } from "vuex-smart-module";
 import Message from "@/types/message/Message";
 import Api from "@/common/api";
 import Room from "@/types/message/Room";
+import { store } from "..";
 
 // State
 class MessageState {
@@ -17,6 +18,8 @@ export const LOAD_ROOMS = 'loadRooms';
 export const LOAD_ROOM_MESSAGES = 'loadRoomMessage';
 export const SEND_MESSAGE = "sendMessage";
 export const RECEIVE_MESSAGE = "receiveMessage";
+export const ADD_MESSAGE = "addMessage";
+export const RELOAD_MESSAGES = "reloadMessages";
 class MessageActions extends Actions<MessageState, MessageGetters, MessageMutations, MessageActions> {
   [LOAD_ROOMS]() {
     return Api.message.loadRooms().then((response) => {
@@ -24,7 +27,7 @@ class MessageActions extends Actions<MessageState, MessageGetters, MessageMutati
         throw new Error(response.error);
       }
 
-      this.state.rooms = response.data;
+      this.commit(SET_ROOMS, response.data);
     })
       .catch((e: Error) => console.log(e.message));
   }
@@ -45,27 +48,35 @@ class MessageActions extends Actions<MessageState, MessageGetters, MessageMutati
   }
 
   [SEND_MESSAGE](payload: any) {
-    this.commit(SEND_MESSAGE, payload);
+    // used by socket to track outgoing messages
+    return undefined;
   }
 
-  [RECEIVE_MESSAGE](payload: Message): void {
-    this.commit(RECEIVE_MESSAGE, payload);
+  [RELOAD_MESSAGES]() {
+    // used by chat window to track changes in messages
+    return undefined;
+  }
+
+  [RECEIVE_MESSAGE](payload: Message) {
+    this.commit(ADD_MESSAGE, payload);
   }
 }
 
 // Mutations
+export const SET_ROOMS = 'setRooms';
 class MessageMutations extends Mutations<MessageState> {
-  [RECEIVE_MESSAGE](payload: Message) {
+  [SET_ROOMS](payload: Room[]) {
+    this.state.rooms = payload;
+  }
+
+  [ADD_MESSAGE](payload: Message) {
     const room = this.state.rooms.find(r => r.id === payload.roomId);
     if (!room) {
       return;
     }
 
     room.messages.push(payload);
-  }
-
-  [SEND_MESSAGE](payload: any) {
-
+    messageStore.context(store).dispatch(RELOAD_MESSAGES);
   }
 }
 

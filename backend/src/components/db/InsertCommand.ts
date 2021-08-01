@@ -60,6 +60,7 @@ export default class InsertCommand {
             return rows;
         }
         catch (e) {
+            console.log(e.message);
             return undefined;
         }
     }

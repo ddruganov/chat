@@ -2,6 +2,7 @@ import Select from "./clauses/Select";
 import Where from "./clauses/where/Where";
 import Query from "./Query";
 import Command from "./Command";
+import StringHelper from "../helpers/StringHelper";
 
 export default class ActiveRecord {
 
@@ -24,7 +25,7 @@ export default class ActiveRecord {
         throw new Error('Not implemented!');
     }
 
-    public static columns(): string[] {
+    public static get columns(): string[] {
         throw new Error('Not implemented!');
     }
 
@@ -38,10 +39,22 @@ export default class ActiveRecord {
         Object.assign(this, attributes);
     }
 
+    public getAttributes(names: string[] | undefined = undefined) {
+
+        names ||= this.static.columns;
+
+        const data: { [key: string]: string | number } = {};
+        for (const name of names) {
+            data[StringHelper.snakeToCamel(name)] = this['_' + name];
+        }
+
+        return data;
+    }
+
     public async save(): Promise<boolean> {
 
         const data = {} as ActiveRecord;
-        this.static.columns().forEach(col => {
+        this.static.columns.forEach(col => {
             if (this['_' + col] === undefined) {
                 return;
             }
@@ -81,7 +94,7 @@ export default class ActiveRecord {
 
     public static async findOne<T extends ActiveRecord>(condition: Where): Promise<T | undefined> {
         let select: Select = {};
-        this.columns().forEach(column => {
+        this.columns.forEach(column => {
             select[column] = '_' + column;
         });
 
@@ -103,7 +116,7 @@ export default class ActiveRecord {
 
     public static async findAll<T extends ActiveRecord>(condition: Where): Promise<T[] | undefined> {
         let select: Select = {};
-        this.columns().forEach(column => {
+        this.columns.forEach(column => {
             select[column] = '_' + column;
         });
 

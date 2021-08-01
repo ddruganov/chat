@@ -9,6 +9,8 @@
       flex-direction: column;
       flex: 1;
       overflow-y: scroll;
+      max-height: calc(100vh - 50px - 3rem - 1rem - 50px - 1rem - 3rem - 1rem);
+
       .message {
         width: 100%;
         max-width: 375px;

@@ -13,7 +13,7 @@ export default class User extends ActiveRecord {
         return 'user.user';
     }
 
-    public static columns() {
+    public static get columns() {
         return ['id', 'email', 'password', 'name', 'signup_date', 'last_seen'];
     }
 

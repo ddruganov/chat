@@ -9,6 +9,7 @@ import MessageController from "./controllers/MessageController";
 import SettingsController from "./controllers/SettingsController";
 import User from "./models/user/User";
 import DateHelper from "./components/helpers/DateHelper";
+import Message from "./models/message/Message";
 
 const app = express();
 const http = require("http").Server(app);
@@ -36,7 +37,6 @@ io.on("connection", function (socket: Socket) {
 
     socket.on('connection.handshake', async (data) => {
         const user = await User.findOne<User>({ left: 'id', value: '=', right: data.userId });
-
         if (!user) {
             socket.disconnect(true);
             return;
@@ -48,7 +48,6 @@ io.on("connection", function (socket: Socket) {
 
     socket.on("connection.close", async (data) => {
         const user = await User.findOne<User>({ left: 'id', value: '=', right: data.userId });
-
         if (!user) {
             return;
         }
@@ -57,35 +56,22 @@ io.on("connection", function (socket: Socket) {
         await user.save();
     });
 
-    // More Socket listening here.
-    // if (io.sockets.connected) socket.emit("connections", Object.keys(io.sockets.connected).length);
-    // else socket.emit("connections", 0);
+    socket.on('room.message', async (data) => {
+        const eventName = `room.${data.roomId}.message`;
 
-    // socket.on("chat-message", async (message) => {
-    //     await new Command("INSERT INTO messages (message, user_id, name) VALUES ($1, $2, $3)", [message.message, socket.id, message.user]).execute();
-    //     socket.broadcast.emit("chat-message", message);
-    // });
+        const model = new Message({
+            creationDate: DateHelper.now().toUTCString(),
+            userId: data.userId,
+            roomId: data.roomId,
+            contents: data.contents
+        });
+        const saveSuccess = await model.save();
+        if (!saveSuccess) {
+            return;
+        }
 
-    // socket.on("typing", (data) => {
-    //     socket.broadcast.emit("typing", data);
-    // });
-
-    // socket.on("stopTyping", () => {
-    //     socket.broadcast.emit("stopTyping");
-    // });
-
-    // socket.on("joined", async (name) => {
-    //     let messageData = null;
-    //     const res = await new Command("insert into users (name, user_id) values ($1, $2)", [name, socket.id]).execute();
-    //     if (res.rowCount) {
-    //         messageData = await new Command("select * from messages where name = $1", [name]).execute();
-    //     }
-    //     socket.broadcast.emit("joined", messageData?.rows);
-    // });
-
-    // socket.on("leave", (data) => {
-    //     socket.broadcast.emit("leave", data);
-    // });
+        socket.emit(eventName, model.getAttributes());
+    });
 });
 
 http.listen(3000, () => {

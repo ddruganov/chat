@@ -18,4 +18,8 @@ export default class StringHelper {
 
         return regex && splitLength > 1;
     }
+
+    public static snakeToCamel(data: string) {
+        return data.split('_').map((s, i) => i === 0 ? s : (s.charAt(0).toUpperCase() + s.slice(1))).join('');
+    }
 }

@@ -1,5 +1,6 @@
 import { store } from "@/store";
 import { authStore } from "@/store/modules/auth.store";
+import { messageStore, RECEIVE_MESSAGE } from "@/store/modules/message.store";
 import { io, Socket } from "socket.io-client";
 
 export default class ChatSocket {
@@ -10,43 +11,46 @@ export default class ChatSocket {
         return authStore.context(store).getters.authenticatedUser;
     }
 
+    get rooms() {
+        return messageStore.context(store).state.rooms;
+    }
+
     constructor() {
-        this.init();
-    }
-
-    private init() {
         store.subscribe((mutation) => {
-            if (mutation.type !== 'auth/setUser') {
-                return;
+            if (mutation.type === 'message/setRooms') {
+                this.socket?.disconnect();
+                this.socket = io("http://localhost:3000");
+                this.socket.emit('connection.handshake', {
+                    userId: this.authenticatedUser.id
+                });
+
+                this.bootstrap();
             }
-
-            this.socket = io("http://localhost:3000");
-            this.socket.emit('connection.handshake', {
-                userId: this.authenticatedUser.id
-            });
         });
 
-        window.addEventListener('beforeunload', () => {
-            this.socket?.emit('connection.close', { userId: this.authenticatedUser.id });
+        store.subscribeAction((action) => {
+            if (action.type === 'message/sendMessage') {
+                const eventName = 'room.message';
+                this.socket?.emit(eventName, action.payload);
+            }
         });
-
-        // this.socket.on("room.message", (data) => {
-        //     // messageStore.context(store).dispatch()
-        //     // // messages.push({
-        //     // //     message: data.message,
-        //     // //     type: 1,
-        //     // //     user: data.user,
-        //     // // });
-        // });
-
-        // this.socket.on('room.user.created', (data) => {
-        //     if (data.userId !== authStore.context(store).getters.authenticatedUser.id) {
-        //         return;
-        //     }
-
-        //     // update rooms
-        //     messageStore.context(store).dispatch(LOAD_ROOMS);
-        // });
     }
 
+    private bootstrap() {
+        const disconnect = () => {
+            this.socket?.emit('connection.close', { userId: this.authenticatedUser.id });
+        };
+        window.removeEventListener('beforeunload', disconnect);
+        window.addEventListener('beforeunload', disconnect);
+
+
+        this.rooms.forEach(room => {
+            const eventName = `room.${room.id}.message`;
+            const listener = (data: any) => {
+                messageStore.context(store).dispatch(RECEIVE_MESSAGE, data);
+            };
+            this.socket?.off(eventName, listener);
+            this.socket?.on(eventName, listener);
+        });
+    }
 }

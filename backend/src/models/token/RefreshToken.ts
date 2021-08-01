@@ -12,7 +12,7 @@ export default class RefreshToken extends ActiveRecord {
         return 'token.refresh_token';
     }
 
-    public static columns() {
+    public static get columns() {
         return ['id', 'user_id', 'issue_date', 'expiration_date', 'value'];
     }
 
