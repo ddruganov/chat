@@ -13,9 +13,10 @@
         </div>
       </div>
       <form class="new-message" @submit.prevent="() => sendMessage()">
-        <div class="input-wrapper" data-label="введите сообщение">
+        <form-input v-model="message" type="textarea" label="введите сообщение" />
+        <!-- <div class="input-wrapper" data-label="введите сообщение">
           <textarea class="input" v-model="message" @keypress="(e) => handleKeyPress(e)"></textarea>
-        </div>
+        </div> -->
         <i class="send fas fa-paper-plane" @click="() => sendMessage()" />
       </form>
     </div>
@@ -26,10 +27,14 @@
 </template>
 
 <script lang="ts">
+import FormInput from "@/components/FormInput.vue";
 import { authStore } from "@/store/modules/auth.store";
 import { messageStore, SEND_MESSAGE } from "@/store/modules/message.store";
-import { Vue } from "vue-class-component";
+import { Options, Vue } from "vue-class-component";
 
+@Options({
+  components: { FormInput },
+})
 export default class HomeIndex extends Vue {
   private message: string = "";
   private reloadMessages: number = 0;
@@ -50,6 +55,10 @@ export default class HomeIndex extends Vue {
     this.$store.subscribeAction((action) => {
       if (action.type === "message/reloadMessages") {
         ++this.reloadMessages;
+        this.$nextTick(() => {
+          const messageContainer = document.querySelector(".messages")!;
+          messageContainer.scrollTop = messageContainer?.scrollHeight;
+        });
       }
     });
   }
@@ -66,16 +75,6 @@ export default class HomeIndex extends Vue {
     });
 
     this.message = "";
-  }
-
-  private handleKeyPress(e: KeyboardEvent) {
-    if (e.key !== "Enter" || e.shiftKey) {
-      return;
-    }
-
-    const target = e.target as HTMLInputElement;
-    target.form?.dispatchEvent(new Event("submit", { cancelable: true }));
-    e.preventDefault();
   }
 }
 </script>

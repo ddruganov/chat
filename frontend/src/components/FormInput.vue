@@ -1,6 +1,22 @@
 <template>
   <div class="input-wrapper">
-    <input class="input" type="text" v-model="input" @input="() => onChange()" required />
+    <textarea
+      v-if="type === 'textarea'"
+      class="input"
+      v-model="input"
+      @input="() => onChange()"
+      @keypress="(e) => handleKeyPress(e)"
+      required
+    />
+    <input
+      v-else
+      class="input"
+      type="text"
+      v-model="input"
+      @input="() => onChange()"
+      @keypress="(e) => handleKeyPress(e)"
+      required
+    />
     <label class="label">{{ label }}</label>
     <span class="error">{{ error }}</span>
   </div>
@@ -8,12 +24,17 @@
 
 <script lang="ts">
 import { Vue } from "vue-class-component";
-import { Prop } from "vue-property-decorator";
+import { Prop, Watch } from "vue-property-decorator";
 
 export default class FormInput extends Vue {
   @Prop(String) readonly modelValue!: string;
+  @Prop(String) readonly type!: string;
   @Prop(String) readonly label!: string;
   @Prop(String) readonly error!: string;
+
+  @Watch("modelValue") onModelValueChanged() {
+    this.input = this.modelValue;
+  }
 
   private input = "";
 
@@ -24,6 +45,16 @@ export default class FormInput extends Vue {
   onChange() {
     this.$emit("update:modelValue", this.input);
     this.$emit("change", this.input);
+  }
+
+  private handleKeyPress(e: KeyboardEvent) {
+    if (e.key !== "Enter" || e.shiftKey) {
+      return;
+    }
+
+    const target = e.target as HTMLInputElement;
+    target.form?.dispatchEvent(new Event("submit", { cancelable: true }));
+    e.preventDefault();
   }
 }
 </script>
