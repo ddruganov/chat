@@ -2,14 +2,9 @@
   <h3 class="text-center mb-3">вход</h3>
 
   <form class="login-form" @submit.prevent="login()">
-    <div class="input-wrapper mb-3" data-label="логин">
-      <input type="text" class="input" v-model="email" />
-      <span v-if="errors.email" class="error">{{ errors.email }}</span>
-    </div>
-    <div class="input-wrapper mb-3" data-label="пароль">
-      <input type="text" class="input" v-model="password" />
-      <span v-if="errors.password" class="error">{{ errors.password }}</span>
-    </div>
+    <form-input v-model="email" label="логин" :error="errors.email" class="mb-3" />
+    <form-input v-model="password" label="пароль" :error="errors.password" class="mb-3" />
+
     <button class="button" :disabled="requestPending">
       <div v-if="requestPending" class="spinner-border text-white spinner-border-sm" />
       <span v-else>войти</span>
@@ -26,9 +21,13 @@
 
 <script lang="ts">
 import Api from "@/common/api";
+import FormInput from "@/components/FormInput.vue";
 import { authStore } from "@/store/modules/auth.store";
-import { Vue } from "vue-class-component";
+import { Options, Vue } from "vue-class-component";
 
+@Options({
+  components: { FormInput },
+})
 export default class AuthLogin extends Vue {
   get isAuthenticated() {
     return authStore.context(this.$store).getters.isAuthenticated;
