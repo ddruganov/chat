@@ -51,15 +51,32 @@ export default class HomeIndex extends Vue {
     return messageStore.context(this.$store).state.rooms.find((r) => r.id === this.currentRoomId);
   }
 
+  get messageContainer() {
+    return document.querySelector(".messages")!;
+  }
+
   mounted() {
     this.$store.subscribeAction((action) => {
       if (action.type === "message/reloadMessages") {
-        ++this.reloadMessages;
-        this.$nextTick(() => {
-          const messageContainer = document.querySelector(".messages")!;
-          messageContainer.scrollTop = messageContainer?.scrollHeight;
-        });
+        this.scrollMessages();
       }
+    });
+  }
+
+  private scrollMessages() {
+    const scrollTop = Math.floor(this.messageContainer.scrollTop);
+    const scrollHeight = Math.floor(
+      this.messageContainer.scrollHeight - this.messageContainer.getBoundingClientRect().height
+    );
+    const prevScrollTop =
+      Math.abs(scrollTop - scrollHeight) <= 1 ? undefined : Math.floor(this.messageContainer.scrollTop);
+
+    ++this.reloadMessages;
+
+    this.$nextTick(() => {
+      this.messageContainer.scrollTo({
+        top: prevScrollTop === undefined ? this.messageContainer.scrollHeight : prevScrollTop,
+      });
     });
   }
 
