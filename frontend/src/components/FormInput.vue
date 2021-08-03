@@ -4,7 +4,8 @@
       v-if="type === 'textarea'"
       class="input"
       v-model="input"
-      @input="() => onChange()"
+      @input="() => onInput()"
+      @change="() => onChange()"
       @keypress="(e) => handleKeyPress(e)"
       required
     />
@@ -13,7 +14,8 @@
       class="input"
       type="text"
       v-model="input"
-      @input="() => onChange()"
+      @input="() => onInput()"
+      @change="() => onChange()"
       @keypress="(e) => handleKeyPress(e)"
       required
     />
@@ -42,8 +44,12 @@ export default class FormInput extends Vue {
     this.input = this.modelValue;
   }
 
-  onChange() {
+  onInput() {
     this.$emit("update:modelValue", this.input);
+    this.$emit("input", this.input);
+  }
+
+  onChange() {
     this.$emit("change", this.input);
   }
 

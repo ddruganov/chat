@@ -5,20 +5,18 @@
 .layout-main {
   display: flex;
   flex-direction: column;
+  height: 100%;
   .basic-layout {
     display: flex;
     min-height: calc(100vh - #{$topbar-height});
     width: 100%;
-
-    // .sidebar {
-    // }
+    height: 100%;
 
     .content-container {
       display: flex;
       flex-direction: column;
       width: 100%;
       flex: 1;
-      margin: 0 3rem;
       .content {
         display: flex;
         flex-direction: column;

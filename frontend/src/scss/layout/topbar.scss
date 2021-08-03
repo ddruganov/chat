@@ -3,9 +3,10 @@
   min-height: $topbar-height;
   height: $topbar-height;
   max-height: $topbar-height;
+  border-bottom: 1px solid $light-gray;
 
-  border-radius: $border-radius-smooth;
-  margin: 3rem 0;
+  // border-radius: $border-radius-smooth;
+  // margin: 3rem 0;
 
   .sidebar-toggler {
     width: 24px;

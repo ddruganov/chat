@@ -1,7 +1,7 @@
 <template>
   <div class="chat-window">
-    <div v-if="currentRoomId && currentRoom" class="block">
-      <div class="messages" :key="reloadMessages">
+    <div v-if="currentRoom" class="block">
+      <div class="messages" :key="reloadMessages" ref="messageContainer">
         <div
           class="message"
           v-for="message in currentRoom.messages"
@@ -14,9 +14,6 @@
       </div>
       <form class="new-message" @submit.prevent="() => sendMessage()">
         <form-input v-model="message" type="textarea" label="введите сообщение" />
-        <!-- <div class="input-wrapper" data-label="введите сообщение">
-          <textarea class="input" v-model="message" @keypress="(e) => handleKeyPress(e)"></textarea>
-        </div> -->
         <i class="send fas fa-paper-plane" @click="() => sendMessage()" />
       </form>
     </div>
@@ -52,31 +49,27 @@ export default class HomeIndex extends Vue {
   }
 
   get messageContainer() {
-    return document.querySelector(".messages")!;
+    return this.$refs.messageContainer as HTMLElement;
   }
 
   mounted() {
     this.$store.subscribeAction((action) => {
       if (action.type === "message/reloadMessages") {
-        this.scrollMessages();
+        this.scrollMessages(action.payload);
       }
     });
   }
 
-  private scrollMessages() {
+  private scrollMessages(options: { scrollToBottom: boolean }) {
     const scrollTop = Math.floor(this.messageContainer.scrollTop);
     const scrollHeight = Math.floor(
       this.messageContainer.scrollHeight - this.messageContainer.getBoundingClientRect().height
     );
-    const prevScrollTop =
-      Math.abs(scrollTop - scrollHeight) <= 1 ? undefined : Math.floor(this.messageContainer.scrollTop);
-
-    ++this.reloadMessages;
+    const prevScrollTop = Math.abs(scrollTop - scrollHeight) <= 1 ? undefined : scrollTop;
 
     this.$nextTick(() => {
-      this.messageContainer.scrollTo({
-        top: prevScrollTop === undefined ? this.messageContainer.scrollHeight : prevScrollTop,
-      });
+      this.messageContainer.scrollTop =
+        prevScrollTop === undefined || options.scrollToBottom ? this.messageContainer.scrollHeight : prevScrollTop;
     });
   }
 

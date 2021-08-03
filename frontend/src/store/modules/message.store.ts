@@ -52,7 +52,7 @@ class MessageActions extends Actions<MessageState, MessageGetters, MessageMutati
     return undefined;
   }
 
-  [RELOAD_MESSAGES]() {
+  [RELOAD_MESSAGES](payload: { scrollToBottom: boolean }) {
     // used by chat window to track changes in messages
     return undefined;
   }
@@ -76,7 +76,7 @@ class MessageMutations extends Mutations<MessageState> {
     }
 
     room.messages.push(payload);
-    messageStore.context(store).dispatch(RELOAD_MESSAGES);
+    messageStore.context(store).dispatch(RELOAD_MESSAGES, { scrollToBottom: false });
   }
 }
 

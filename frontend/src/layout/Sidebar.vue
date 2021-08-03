@@ -6,6 +6,9 @@
         <i class="settings fas fa-sliders-h" modal-trigger="settings-modal" />
       </div>
     </div>
+    <div class="search">
+      <form-input v-model="search" label="поиск" type="text" />
+    </div>
     <div class="rooms d-flex flex-column">
       <div
         v-for="room in rooms"
@@ -15,7 +18,7 @@
         @click="() => openRoom(room.id)"
       >
         <div class="name">
-          {{ room.name }}
+          {{ getRoomName(room) }}
         </div>
         <div class="last-message text-muted">
           {{ getLastMessage(room) }}
@@ -41,19 +44,21 @@
 
 <script lang="ts">
 import Api from "@/common/api";
+import FormInput from "@/components/FormInput.vue";
 import ModalWindow from "@/components/ModalWindow.vue";
 import SaveIndicator from "@/components/SaveIndicator.vue";
 import { authStore, GET_CURRENT_USER } from "@/store/modules/auth.store";
-import { LOAD_ROOMS, messageStore } from "@/store/modules/message.store";
+import { LOAD_ROOMS, messageStore, RELOAD_MESSAGES } from "@/store/modules/message.store";
 import Room from "@/types/message/Room";
 import { Options, Vue } from "vue-class-component";
 
 @Options({
-  components: { ModalWindow, SaveIndicator },
+  components: { ModalWindow, SaveIndicator, FormInput },
 })
 export default class Sidebar extends Vue {
   private saveCount: number = 0;
   private saveSuccess: boolean = false;
+  private search: string = "";
 
   get currentRoomId() {
     return Number(this.$route.params.roomId);
@@ -73,7 +78,9 @@ export default class Sidebar extends Vue {
 
   private openRoom(roomId: number) {
     // this.$emit("toggleSidebar");
-    this.$router.push({ path: `/room/${roomId}` });
+    this.$router.push({ path: `/room/${roomId}` }).then(() => {
+      messageStore.context(this.$store).dispatch(RELOAD_MESSAGES, { scrollToBottom: true });
+    });
   }
 
   private saveUser() {
@@ -101,6 +108,14 @@ export default class Sidebar extends Vue {
     }
 
     return room.messages[room.messages.length - 1].contents.slice(0, 15);
+  }
+
+  private getRoomName(room: Room) {
+    if (room.users.length > 2) {
+      return room.name;
+    }
+
+    return room.users.filter((u) => u.id !== this.authenticatedUser.id)[0].name;
   }
 }
 </script>

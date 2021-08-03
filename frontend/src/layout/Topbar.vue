@@ -2,7 +2,7 @@
   <header class="topbar navbar navbar-expand-lg p-3">
     <i class="sidebar-toggler fas fa-bars" @click.prevent="() => toggleSidebar()" />
     <div v-if="currentRoom" class="open-room">
-      <span class="name">{{ currentRoom.name }}</span>
+      <span class="name">{{ getCurrentRoomName() }}</span>
       <span class="user-count text-muted">({{ currentRoom.users.map((u) => u.name).join(", ") }})</span>
     </div>
   </header>
@@ -32,6 +32,18 @@ export default class Topbar extends Vue {
 
   toggleSidebar() {
     this.$emit("toggleSidebar");
+  }
+
+  private getCurrentRoomName() {
+    if (!this.currentRoom) {
+      return undefined;
+    }
+
+    if (this.currentRoom.users.length > 2) {
+      return this.currentRoom?.name;
+    }
+
+    return this.currentRoom.users.filter((u) => u.id !== this.authenticatedUser.id)[0].name;
   }
 }
 </script>

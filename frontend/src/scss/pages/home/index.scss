@@ -9,7 +9,9 @@
       flex-direction: column;
       flex: 1;
       overflow-y: scroll;
-      max-height: calc(100vh - 50px - 3rem - 1rem - 50px - 1rem - 3rem - 1rem);
+      max-height: calc(100vh - 50px - 1rem - 50px - 1rem);
+      padding: 1rem;
+      padding-bottom: 0;
 
       .message {
         width: 100%;
@@ -38,7 +40,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 1rem;
+      padding: 1rem;
+      border-top: 1px solid $light-gray;
       .input-wrapper {
         width: 100%;
       }

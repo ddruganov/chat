@@ -30,7 +30,7 @@ export default class ChatSocket {
 
         store.subscribeAction((action) => {
             if (action.type === 'message/sendMessage') {
-                const eventName = 'room.message';
+                const eventName = 'room.message.send';
                 this.socket?.emit(eventName, action.payload);
             }
         });
@@ -43,9 +43,8 @@ export default class ChatSocket {
         window.removeEventListener('beforeunload', disconnect);
         window.addEventListener('beforeunload', disconnect);
 
-
         this.rooms.forEach(room => {
-            const eventName = `room.${room.id}.message`;
+            const eventName = `room.${room.id}.message.receive`;
             const listener = (data: any) => {
                 messageStore.context(store).dispatch(RECEIVE_MESSAGE, data);
             };

@@ -6,7 +6,7 @@
       </transition>
       <!-- <div class="content-container" @click="(e) => tryHideSidebar(e)"> -->
       <div class="content-container">
-        <div class="content container">
+        <div class="content">
           <topbar @toggleSidebar="() => toggleSidebar()" />
           <router-view />
         </div>

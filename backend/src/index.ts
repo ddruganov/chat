@@ -57,9 +57,7 @@ io.on("connection", function (socket: Socket) {
         await user.save();
     });
 
-    socket.on('room.message', async (data) => {
-        const eventName = `room.${data.roomId}.message`;
-
+    socket.on('room.message.send', async (data) => {
         const model = new Message({
             creationDate: DateHelper.now().toUTCString(),
             userId: data.userId,
@@ -71,7 +69,8 @@ io.on("connection", function (socket: Socket) {
             return;
         }
 
-        socket.emit(eventName, model.getAttributes());
+        const eventName = `room.${data.roomId}.message.receive`;
+        io.emit(eventName, model.getAttributes());
     });
 });
 
