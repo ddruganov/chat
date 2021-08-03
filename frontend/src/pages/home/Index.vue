@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-window my-5">
+  <div class="chat-window">
     <div v-if="currentRoomId && currentRoom" class="block">
       <div class="messages" :key="reloadMessages">
         <div

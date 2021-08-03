@@ -72,7 +72,7 @@ export default class Sidebar extends Vue {
   }
 
   private openRoom(roomId: number) {
-    this.$emit("toggleSidebar");
+    // this.$emit("toggleSidebar");
     this.$router.push({ path: `/room/${roomId}` });
   }
 

@@ -10,17 +10,38 @@
     min-height: calc(100vh - #{$topbar-height});
     width: 100%;
 
+    // .sidebar {
+    // }
+
     .content-container {
       display: flex;
       flex-direction: column;
       width: 100%;
       flex: 1;
+      margin: 0 3rem;
       .content {
         display: flex;
         flex-direction: column;
         padding: 0;
         height: 100%;
         flex: 1;
+
+        .topbar {
+          .sidebar-toggler {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: calc(664px)) {
+  .layout-main {
+    .basic-layout {
+      .sidebar {
+        position: absolute;
+        height: 100%;
       }
     }
   }

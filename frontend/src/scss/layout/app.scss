@@ -1,3 +1,7 @@
+html {
+  font-size: $rem !important;
+}
+
 #app {
   display: flex;
   flex-direction: column;

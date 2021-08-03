@@ -4,7 +4,8 @@
       <transition name="slide">
         <sidebar v-show="showSidebar" @toggleSidebar="() => toggleSidebar()" />
       </transition>
-      <div class="content-container" @click="(e) => tryHideSidebar(e)">
+      <!-- <div class="content-container" @click="(e) => tryHideSidebar(e)"> -->
+      <div class="content-container">
         <div class="content container">
           <topbar @toggleSidebar="() => toggleSidebar()" />
           <router-view />
@@ -49,7 +50,7 @@ import { authStore, GET_CURRENT_USER } from "@/store/modules/auth.store";
 })
 export default class MainLayout extends Vue {
   dataLoaded = false;
-  showSidebar = false;
+  showSidebar = true;
 
   mounted() {
     this.load();
