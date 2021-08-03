@@ -1,15 +1,14 @@
 import { Socket } from "socket.io";
 
 import express from "express";
-import AuthController from "./controllers/AuthController";
 import cors from "cors";
 import bodyParser from "body-parser";
 import cookies from "cookie-parser";
-import MessageController from "./controllers/MessageController";
-import SettingsController from "./controllers/SettingsController";
 import User from "./models/user/User";
 import DateHelper from "./components/helpers/DateHelper";
 import Message from "./models/message/Message";
+import fs from 'fs';
+
 
 const app = express();
 const http = require("http").Server(app);
@@ -21,7 +20,6 @@ const io = require("socket.io")(http, {
 
 app.use(bodyParser.json())
 app.use(cookies())
-
 app.use(cors({
     allowedHeaders: ['Origin', 'Accept', 'Authorization', 'Access-Control-Allow-Headers', 'Origin', 'Accept-Encoding', 'X-Requested-With', 'Content-Type', 'Access-Control-Request-Method', 'Access-Control-Request-Headers', 'X-Access-Token', 'X-Refresh-Token', 'Accept-Language', 'Cache-Control', 'Connection', 'Host', 'Pragma', 'Referer'],
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
@@ -29,9 +27,12 @@ app.use(cors({
     credentials: true
 }));
 
-app.use('/auth', AuthController);
-app.use('/message', MessageController);
-app.use('/settings', SettingsController);
+const testFolder = __dirname + '/controllers';
+fs.readdir(testFolder, (_, files) => {
+    files.forEach(file => {
+        /^.*.controller.ts$/.test(file) && new (require(testFolder + '/' + file)).default();
+    });
+});
 
 io.on("connection", function (socket: Socket) {
 
@@ -77,3 +78,5 @@ io.on("connection", function (socket: Socket) {
 http.listen(3000, () => {
     console.log("Listening on port localhost:3000");
 });
+
+export default app;

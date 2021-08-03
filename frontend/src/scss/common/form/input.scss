@@ -17,10 +17,12 @@
     &:valid {
       & + .label {
         top: -8px !important;
+        background: $white;
       }
       &:focus {
         & + .label {
           top: -8px !important;
+          color: $blue;
         }
       }
     }
@@ -32,6 +34,8 @@
       &:focus {
         & + .label {
           top: -8px;
+          color: $blue;
+          background: $white;
         }
       }
     }
@@ -47,7 +51,6 @@
     padding: 0 0.25rem;
     top: 8px;
     left: 10px;
-    background: $white;
     color: $gray;
     transition: 0.125s all linear;
     pointer-events: none;
