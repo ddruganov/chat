@@ -1,5 +1,3 @@
-import { Client } from "pg";
-import databaseConfig from "../../config/database.config";
 import SelectClauseParser from './clauseParsers/SelectClauseParser';
 import FromClauseParser from './clauseParsers/FromClauseParser';
 import JoinClauseParser from './clauseParsers/JoinClauseParser';
@@ -11,10 +9,10 @@ import Join from "./clauses/Join";
 import Where from "./clauses/where/Where";
 import Operator from "./clauses/where/Operator";
 import Order from "./clauses/Order";
+import DateHelper from "../helpers/DateHelper";
+import DatabaseAccessor from "./DatabaseAccessor";
 
-export default class Query {
-    private _db: Client;
-
+export default class Query extends DatabaseAccessor {
     private sql: string;
 
     private clauses: Clauses = {
@@ -26,13 +24,6 @@ export default class Query {
     private _limit?: number;
     private _offset?: number;
     private order?: Order;
-
-    public constructor() {
-        this._db = new Client(databaseConfig);
-        this._db.connect((err) => {
-            err && console.log('pg connection error:', err.message, err.stack);
-        });
-    }
 
     public select(value: Select) {
         this.clauses.select = [value];
@@ -101,22 +92,27 @@ export default class Query {
 
     public async all() {
         this.build();
-        const res = await this._db.query(this.sql);
-        await this._db.end();
-        if (!res.rowCount) {
-            return undefined;
-        }
 
-        const rows = res.rows;
-        for (const entry of rows) {
-            for (const key in entry) {
-                if (entry[key] instanceof Date) {
-                    entry[key] = entry[key].toISOString().split('T').map((piece: string) => piece.split('.')[0]).join(' ');
+        try {
+            const res = await this._db.query(this.sql);
+            if (!res.rowCount) {
+                throw new Error();
+            }
+
+            const rows = res.rows;
+            for (const entry of rows) {
+                for (const key in entry) {
+                    if (entry[key] instanceof Date) {
+                        entry[key] = DateHelper.convert(entry[key]).toUTCString();
+                    }
                 }
             }
-        }
 
-        return rows;
+            return rows;
+        }
+        catch (e) {
+            return undefined;
+        }
     }
 
     public async one() {

@@ -1,0 +1,22 @@
+.user-search {
+  position: relative;
+  padding: 1rem;
+  border-bottom: 1px solid $light-gray;
+  .results {
+    position: absolute;
+    width: calc(100% - 2rem);
+    .user {
+      background: $white;
+      padding: 0.5rem 1rem;
+      border: 1px solid $light-gray;
+      cursor: pointer;
+      border-radius: $border-radius;
+      * {
+        cursor: pointer;
+      }
+      &:hover {
+        border-color: $blue;
+      }
+    }
+  }
+}

@@ -8,13 +8,14 @@ export default class User extends ActiveRecord {
     private _name: string;
     private _signup_date: string;
     private _last_seen: string | null;
+    private _nick: string;
 
     public static tableName() {
         return 'user.user';
     }
 
     public static get columns() {
-        return ['id', 'email', 'password', 'name', 'signup_date', 'last_seen'];
+        return ['id', 'email', 'password', 'name', 'signup_date', 'last_seen', 'nick'];
     }
 
     public get id() {
@@ -33,12 +34,17 @@ export default class User extends ActiveRecord {
         return this._last_seen;
     }
 
+    public get nick() {
+        return this._nick;
+    }
+
     public set id(value: number) {
         this._id = value;
     }
 
     public set email(value: string) {
         this._email = value;
+        this.nick = value.split('@')[0];
     }
 
     public set password(value: string) {
@@ -55,5 +61,9 @@ export default class User extends ActiveRecord {
 
     public set lastSeen(value: string | null) {
         this._last_seen = value;
+    }
+
+    public set nick(value: string) {
+        this._nick = value;
     }
 }

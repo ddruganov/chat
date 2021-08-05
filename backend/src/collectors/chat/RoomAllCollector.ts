@@ -1,9 +1,18 @@
 import Query from "../../components/db/Query";
-import Message from "../../models/message/Message";
-import Room from "../../models/message/Room";
-import RoomUser from "../../models/message/RoomUser";
+import Message from "../../models/chat/Message";
+import Room from "../../models/chat/Room";
+import RoomUser from "../../models/chat/RoomUser";
 import User from "../../models/user/User";
 import BaseCollector from "../base/BaseCollector";
+
+type FullRoomData = {
+    id: number;
+    name: string;
+    creatorId: number;
+    creationDate: string;
+    messages: Message[],
+    users: User[]
+}
 
 export default class RoomAllCollector extends BaseCollector {
     private user: User;
@@ -58,7 +67,7 @@ export default class RoomAllCollector extends BaseCollector {
                 .all();
         }
 
-        return rooms;
+        return rooms; //.filter((r: FullRoomData) => r.messages.length || r.creatorId === this.user.id);
     }
 
     public setUser(value: User) {

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { chownSync } from 'fs';
 import jwt from 'jsonwebtoken';
 import jwtConfig from "../../config/jwt.config";
 import AccessToken from '../../models/token/AccessToken';
@@ -12,7 +13,7 @@ export default class TokenHelper {
     }
 
     public static async generate(res: Response, user: User) {
-        const accessTokenExpirationTimestamp = DateHelper.now().getTime() + jwtConfig.accessTokenLifetime;
+        const accessTokenExpirationTimestamp = DateHelper.nowt() + jwtConfig.accessTokenLifetime;
         const accessToken = jwt.sign({ userId: user.id, expiresAt: accessTokenExpirationTimestamp }, jwtConfig.secret);
         res.cookie('X-Access-Token', accessToken, {
             httpOnly: true,
@@ -29,7 +30,7 @@ export default class TokenHelper {
             return false;
         }
 
-        const refreshTokenExpirationTimestamp = DateHelper.now().getTime() + jwtConfig.refreshTokenLifetime;
+        const refreshTokenExpirationTimestamp = DateHelper.nowt() + jwtConfig.refreshTokenLifetime;
         const refreshToken = jwt.sign({ accessToken: accessToken, expiresAt: refreshTokenExpirationTimestamp }, jwtConfig.secret, { expiresIn: jwtConfig.refreshTokenLifetime });
         res.cookie('X-Refresh-Token', refreshToken, {
             httpOnly: true,
@@ -39,8 +40,8 @@ export default class TokenHelper {
         });
         const refreshTokenAr = new RefreshToken({
             userId: user.id,
-            issueDate: DateHelper.now().toUTCString(),
-            expirationDate: new Date(refreshTokenExpirationTimestamp).toUTCString(),
+            issueDate: DateHelper.now(),
+            expirationDate: DateHelper.fromTimestamp(refreshTokenExpirationTimestamp),
             value: refreshToken
         });
         const refreshTokenSaveRes = await refreshTokenAr.save();
@@ -51,16 +52,24 @@ export default class TokenHelper {
         return true;
     }
 
-    public static purge(res: Response, user: User) {
+    public static async purge(req: Request, res: Response, user: User) {
+        const accessToken = req.cookies['X-Access-Token'];
+        const refreshToken = req.cookies['X-Refresh-Token'];
+
+        const accessTokenAr = await AccessToken.findOne<AccessToken>({ left: 'value', value: '=', right: accessToken });
+        accessTokenAr && accessTokenAr.blacklist();
+        const refreshTokenAr = await RefreshToken.findOne<RefreshToken>({ left: 'value', value: '=', right: refreshToken });
+        refreshTokenAr && refreshTokenAr.expire();
+
         res.cookie('X-Access-Token', undefined, {
             httpOnly: true,
-            expires: DateHelper.now(),
+            expires: DateHelper.nowAsJSDate(),
             sameSite: 'lax',
             secure: false
         });
         res.cookie('X-Refresh-Token', undefined, {
             httpOnly: true,
-            expires: DateHelper.now(),
+            expires: DateHelper.nowAsJSDate(),
             sameSite: 'lax',
             secure: false
         });
@@ -86,7 +95,7 @@ export default class TokenHelper {
 
         const user = (await User.findOne<User>({ left: 'id', value: '=', right: verifyRes.userId }))!;
 
-        const now = DateHelper.now().getTime();
+        const now = DateHelper.nowt();
         const accessTokenExpirationTimestamp = verifyRes.expiresAt;
 
         if (now > accessTokenExpirationTimestamp) {
@@ -111,11 +120,11 @@ export default class TokenHelper {
 
             const refreshTokenExpirationTimestamp = refreshTokenVerify.expiresAt;
             if (now > refreshTokenExpirationTimestamp) {
-                TokenHelper.purge(res, user);
+                TokenHelper.purge(req, res, user);
                 return undefined;
             }
 
-            refreshTokenAr.expirationDate = DateHelper.now().toUTCString();
+            refreshTokenAr.expirationDate = DateHelper.now();
             await refreshTokenAr.save();
 
             await TokenHelper.generate(res, user);

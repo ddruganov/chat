@@ -1,4 +1,3 @@
-@import "topbar";
 @import "sidebar";
 @import "footer";
 
@@ -23,12 +22,6 @@
         padding: 0;
         height: 100%;
         flex: 1;
-
-        .topbar {
-          .sidebar-toggler {
-            display: none;
-          }
-        }
       }
     }
   }

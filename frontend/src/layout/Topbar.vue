@@ -1,20 +1,31 @@
 <template>
-  <header class="topbar navbar navbar-expand-lg p-3">
-    <i class="sidebar-toggler fas fa-bars" @click.prevent="() => toggleSidebar()" />
+  <header class="topbar">
     <div v-if="currentRoom" class="open-room">
-      <span class="name">{{ getCurrentRoomName() }}</span>
-      <span class="user-count text-muted">({{ currentRoom.users.map((u) => u.name).join(", ") }})</span>
+      <go-back link="/" />
+      <span class="name">{{ currentRoomName }}</span>
+      <span class="user-count link" modal-trigger="showRoomUsers">{{ currentRoomUserCount }}</span>
+
+      <modal-window id="showRoomUsers" hideFooter>
+        <template #title>Пользователи</template>
+        <template #body>
+          <div v-for="(user, i) in currentRoom.users" :key="user.id">{{ i + 1 }}. {{ user.name }}</div>
+        </template>
+      </modal-window>
     </div>
   </header>
 </template>
 
-<style lang="scss"></style>
-
 <script lang="ts">
 import { authStore } from "@/store/modules/auth.store";
-import { messageStore } from "@/store/modules/message.store";
-import { Vue } from "vue-class-component";
+import { chatStore } from "@/store/modules/chat.store";
+import { Options, Vue } from "vue-class-component";
+import RoomDataHelper from "@/common/helpers/RoomDataHelper";
+import ModalWindow from "@/components/ModalWindow.vue";
+import GoBack from "@/components/GoBack.vue";
 
+@Options({
+  components: { ModalWindow, GoBack },
+})
 export default class Topbar extends Vue {
   showSidebar = false;
 
@@ -27,23 +38,15 @@ export default class Topbar extends Vue {
   }
 
   get currentRoom() {
-    return messageStore.context(this.$store).state.rooms.find((r) => r.id === this.currentRoomId);
+    return chatStore.context(this.$store).state.rooms.find((r) => r.id === this.currentRoomId)!;
   }
 
-  toggleSidebar() {
-    this.$emit("toggleSidebar");
+  get currentRoomName() {
+    return RoomDataHelper.getName(this.currentRoom, this.authenticatedUser);
   }
 
-  private getCurrentRoomName() {
-    if (!this.currentRoom) {
-      return undefined;
-    }
-
-    if (this.currentRoom.users.length > 2) {
-      return this.currentRoom?.name;
-    }
-
-    return this.currentRoom.users.filter((u) => u.id !== this.authenticatedUser.id)[0].name;
+  get currentRoomUserCount() {
+    return RoomDataHelper.getUserCount(this.currentRoom);
   }
 }
 </script>

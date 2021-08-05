@@ -1,0 +1,24 @@
+.go-back {
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .icon,
+  .caption {
+    transition: 0.25s linear all;
+    color: $gray !important;
+  }
+
+  .caption {
+    margin-left: 0.5rem;
+  }
+
+  &:hover {
+    .icon,
+    .caption {
+      color: $blue !important;
+    }
+  }
+}

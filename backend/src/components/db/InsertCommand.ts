@@ -1,24 +1,16 @@
-import { Client } from "pg";
-import databaseConfig from "../../config/database.config";
+import DateHelper from "../helpers/DateHelper";
 import StringHelper from "../helpers/StringHelper";
+import DatabaseAccessor from "./DatabaseAccessor";
 
 type Columns = {
     [key: string]: string | number;
 };
 
-export default class InsertCommand {
-    private _db: Client;
+export default class InsertCommand extends DatabaseAccessor {
+    private sql = '';
 
-    private sql: string;
     private _tableName: string;
     private _columns: Columns;
-
-    public constructor() {
-        this._db = new Client(databaseConfig);
-        this._db.connect((err) => {
-            err && console.log('pg connection error:', err.message, err.stack);
-        })
-    }
 
     public into(tableName: string) {
         this._tableName = tableName;
@@ -43,7 +35,6 @@ export default class InsertCommand {
 
         try {
             const res = await this._db.query(this.sql);
-            await this._db.end();
             if (!res.rowCount) {
                 throw new Error();
             }
@@ -52,7 +43,7 @@ export default class InsertCommand {
             for (const entry of rows) {
                 for (const key in entry) {
                     if (entry[key] instanceof Date) {
-                        entry[key] = entry[key].toISOString().split('T').map((piece: string) => piece.split('.')[0]).join(' ');
+                        entry[key] = DateHelper.convert(entry[key]).toUTCString();
                     }
                 }
             }
@@ -60,7 +51,6 @@ export default class InsertCommand {
             return rows;
         }
         catch (e) {
-            console.log(e.message);
             return undefined;
         }
     }

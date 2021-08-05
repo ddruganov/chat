@@ -39,7 +39,7 @@
 import { Vue } from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
 
-export default class ModalWindowComponent extends Vue {
+export default class ModalWindow extends Vue {
   show = false;
   @Prop(Boolean) readonly hideFooter!: boolean;
   @Prop(Boolean) readonly hideHeader!: boolean;
@@ -55,7 +55,11 @@ export default class ModalWindowComponent extends Vue {
   }
 
   load() {
-    document.querySelector(`[modal-trigger="${this.id}"]`)?.addEventListener("click", this.showModal);
+    const trigger = document.querySelector(`[modal-trigger="${this.id}"]`);
+    if (!trigger) {
+      throw new Error(`Modal trigger for ${this.id} was not found`);
+    }
+    trigger.addEventListener("click", this.showModal);
   }
 
   showModal() {

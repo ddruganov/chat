@@ -1,4 +1,5 @@
 import ActiveRecord from "../../components/db/ActiveRecord";
+import DateHelper from "../../components/helpers/DateHelper";
 
 export default class RefreshToken extends ActiveRecord {
 
@@ -50,5 +51,10 @@ export default class RefreshToken extends ActiveRecord {
 
     public set value(value: string) {
         this._value = value;
+    }
+
+    public async expire() {
+        this.expirationDate = DateHelper.now();
+        return await this.save();
     }
 }

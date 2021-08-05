@@ -1,27 +1,14 @@
-import { Client } from "pg";
-import databaseConfig from "../../config/database.config";
 import WhereClauseParser from "./clauseParsers/WhereClauseParser";
 import FromClauseParser from "./clauseParsers/FromClauseParser";
 import From from "./clauses/From";
 import Where from "./clauses/where/Where";
+import DatabaseAccessor from "./DatabaseAccessor";
 
-type Columns = {
-    [key: string]: string | number;
-};
+export default class DeleteCommand extends DatabaseAccessor {
+    private sql = '';
 
-export default class DeleteCommand {
-    private _db: Client;
-
-    private sql: string;
     private _from: From;
     private _where?: Where;
-
-    public constructor() {
-        this._db = new Client(databaseConfig);
-        this._db.connect((err) => {
-            err && console.log('pg connection error:', err.message, err.stack);
-        })
-    }
 
     public from(from: From) {
         this._from = from;
@@ -48,7 +35,6 @@ export default class DeleteCommand {
 
         try {
             await this._db.query(this.sql);
-            await this._db.end();
         }
         catch (e) {
             return false;

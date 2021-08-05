@@ -3,8 +3,17 @@ import Where from "./clauses/where/Where";
 import Query from "./Query";
 import Command from "./Command";
 import StringHelper from "../helpers/StringHelper";
+import Columns from "./Columns";
 
 export default class ActiveRecord {
+
+    public static get SORT_ASC() {
+        return 'asc';
+    }
+
+    public static get SORT_DESC() {
+        return 'desc';
+    }
 
     [key: string]: any;
 
@@ -52,8 +61,7 @@ export default class ActiveRecord {
     }
 
     public async save(): Promise<boolean> {
-
-        const data = {} as ActiveRecord;
+        const data: Columns = {};
         this.static.columns.forEach(col => {
             if (this['_' + col] === undefined) {
                 return;
@@ -63,11 +71,12 @@ export default class ActiveRecord {
         });
 
         if (this._isNew) {
-            const rows = await new Command()
-                .insert()
-                .into(this.static.tableName())
-                .columns(data)
-                .execute();
+            const rows = await
+                Command
+                    .insert()
+                    .into(this.static.tableName())
+                    .columns(data)
+                    .execute();
 
             if (rows === undefined || !rows.length) {
                 return false;
@@ -84,12 +93,34 @@ export default class ActiveRecord {
             return true;
         }
 
-        return await new Command()
-            .update()
-            .table(this.static.tableName())
-            .set(data)
-            .where({ left: 'id', value: '=', right: this.id })
-            .execute();
+        return await
+            Command
+                .update()
+                .table(this.static.tableName())
+                .set(data)
+                .where({ left: 'id', value: '=', right: this.id })
+                .execute();
+    }
+
+    public async delete() {
+        const data: Where[] = [];
+        this.static.columns.forEach(col => {
+            data.push({
+                left: col,
+                value: '=',
+                right: this['_' + col]
+            })
+        });
+
+        return await
+            Command
+                .delete()
+                .from({ tableName: this.static.tableName() })
+                .where({
+                    operator: 'and',
+                    operands: data
+                })
+                .execute();
     }
 
     public static async findOne<T extends ActiveRecord>(condition: Where): Promise<T | undefined> {
@@ -124,6 +155,7 @@ export default class ActiveRecord {
             .select(select)
             .from({ tableName: this.tableName() })
             .where(condition)
+            .orderBy({ column: 'id', direction: ActiveRecord.SORT_ASC })
             .all();
 
         if (!data) {

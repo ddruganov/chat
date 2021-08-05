@@ -1,16 +1,20 @@
 <template>
   <div class="chat-window">
     <div v-if="currentRoom" class="block">
+      <topbar />
       <div class="messages" :key="reloadMessages" ref="messageContainer">
-        <div
-          class="message"
-          v-for="message in currentRoom.messages"
-          :key="message.id"
-          :class="{ my: message.userId === authenticatedUser.id }"
-        >
-          <div class="contents">{{ message.contents }}</div>
-          <div class="creation-date">{{ message.creationDate }}</div>
-        </div>
+        <template v-if="currentRoom.messages.length">
+          <div
+            class="message"
+            v-for="message in currentRoom.messages"
+            :key="message.id"
+            :class="{ my: message.userId === authenticatedUser.id }"
+          >
+            <div class="contents">{{ message.contents }}</div>
+            <div class="creation-date">{{ message.creationDate }}</div>
+          </div>
+        </template>
+        <span v-else class="text-muted m-auto">у вас пока нет сообщений</span>
       </div>
       <form class="new-message" @submit.prevent="() => sendMessage()">
         <form-input v-model="message" type="textarea" label="введите сообщение" />
@@ -25,12 +29,13 @@
 
 <script lang="ts">
 import FormInput from "@/components/FormInput.vue";
+import Topbar from "@/layout/Topbar.vue";
 import { authStore } from "@/store/modules/auth.store";
-import { messageStore, SEND_MESSAGE } from "@/store/modules/message.store";
+import { chatStore, CHAT_STORE_NAMESPACE, RELOAD_MESSAGES, SEND_MESSAGE } from "@/store/modules/chat.store";
 import { Options, Vue } from "vue-class-component";
 
 @Options({
-  components: { FormInput },
+  components: { FormInput, Topbar },
 })
 export default class HomeIndex extends Vue {
   private message: string = "";
@@ -45,7 +50,7 @@ export default class HomeIndex extends Vue {
   }
 
   get currentRoom() {
-    return messageStore.context(this.$store).state.rooms.find((r) => r.id === this.currentRoomId);
+    return chatStore.context(this.$store).state.rooms.find((r) => r.id === this.currentRoomId);
   }
 
   get messageContainer() {
@@ -54,7 +59,7 @@ export default class HomeIndex extends Vue {
 
   mounted() {
     this.$store.subscribeAction((action) => {
-      if (action.type === "message/reloadMessages") {
+      if (action.type === [CHAT_STORE_NAMESPACE, RELOAD_MESSAGES].join("/")) {
         this.scrollMessages(action.payload);
       }
     });
@@ -78,7 +83,7 @@ export default class HomeIndex extends Vue {
       return;
     }
 
-    messageStore.context(this.$store).dispatch(SEND_MESSAGE, {
+    chatStore.context(this.$store).dispatch(SEND_MESSAGE, {
       roomId: this.currentRoomId,
       userId: this.authenticatedUser.id,
       contents: this.message,

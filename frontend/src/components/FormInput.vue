@@ -33,6 +33,9 @@ export default class FormInput extends Vue {
   @Prop(String) readonly type!: string;
   @Prop(String) readonly label!: string;
   @Prop(String) readonly error!: string;
+  @Prop(Number) readonly inputEventDelay!: number;
+
+  private timer = 0;
 
   @Watch("modelValue") onModelValueChanged() {
     this.input = this.modelValue;
@@ -45,8 +48,11 @@ export default class FormInput extends Vue {
   }
 
   onInput() {
-    this.$emit("update:modelValue", this.input);
-    this.$emit("input", this.input);
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => {
+      this.$emit("update:modelValue", this.input);
+      this.$emit("input", this.input);
+    }, this.inputEventDelay || 0);
   }
 
   onChange() {

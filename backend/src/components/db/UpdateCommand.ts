@@ -1,27 +1,14 @@
-import { Client } from "pg";
-import databaseConfig from "../../config/database.config";
 import StringHelper from "../helpers/StringHelper";
 import WhereClauseParser from "./clauseParsers/WhereClauseParser";
 import Where from "./clauses/where/Where";
+import Columns from "./Columns";
+import DatabaseAccessor from "./DatabaseAccessor";
 
-type Columns = {
-    [key: string]: string | number;
-};
-
-export default class UpdateCommand {
-    private _db: Client;
-
+export default class UpdateCommand extends DatabaseAccessor {
     private sql: string;
     private _tableName: string;
     private _columns: Columns;
     private _where?: Where;
-
-    public constructor() {
-        this._db = new Client(databaseConfig);
-        this._db.connect((err) => {
-            err && console.log('pg connection error:', err.message, err.stack);
-        })
-    }
 
     public table(tableName: string) {
         this._tableName = tableName;
@@ -53,7 +40,6 @@ export default class UpdateCommand {
 
         try {
             await this._db.query(this.sql);
-            await this._db.end();
         }
         catch (e) {
             return false;

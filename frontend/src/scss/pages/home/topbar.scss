@@ -1,0 +1,22 @@
+.topbar {
+  background: $white;
+  min-height: $topbar-height;
+  height: $topbar-height;
+  max-height: $topbar-height;
+  border-bottom: 1px solid $light-gray;
+  padding: 1rem;
+
+  .open-room {
+    display: flex;
+    align-items: center;
+    & > .name {
+      margin-left: 1rem;
+      font-weight: bold;
+      font-size: 14px;
+      letter-spacing: 0.05rem;
+    }
+    & > .user-count {
+      margin-left: 1rem;
+    }
+  }
+}

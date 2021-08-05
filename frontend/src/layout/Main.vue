@@ -1,13 +1,11 @@
 <template>
   <div v-if="dataLoaded" class="layout-main">
-    <div class="basic-layout" @click="tryCloseSidebar">
+    <div class="basic-layout" @click="() => tryCloseSidebar">
       <transition name="slide">
         <sidebar v-show="showSidebar" @toggleSidebar="() => toggleSidebar()" />
       </transition>
-      <!-- <div class="content-container" @click="(e) => tryHideSidebar(e)"> -->
       <div class="content-container">
         <div class="content">
-          <topbar @toggleSidebar="() => toggleSidebar()" />
           <router-view />
         </div>
       </div>

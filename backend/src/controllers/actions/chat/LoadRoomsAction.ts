@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import ExecutionResult from "../../../components/ExecutionResult";
 import { INVALID_AUTH } from "../../../config/codes";
 import TokenHelper from "../../../components/helpers/TokenHelper";
-import RoomAllCollector from "../../../collectors/message/RoomAllCollector";
+import RoomAllCollector from "../../../collectors/chat/RoomAllCollector";
 
 export default async function (req: Request, res: Response) {
     const user = await TokenHelper.check(req, res);

@@ -6,9 +6,13 @@ import bodyParser from "body-parser";
 import cookies from "cookie-parser";
 import User from "./models/user/User";
 import DateHelper from "./components/helpers/DateHelper";
-import Message from "./models/message/Message";
+import Message from "./models/chat/Message";
 import fs from 'fs';
-
+import Room from "./models/chat/Room";
+import RoomUser from "./models/chat/RoomUser";
+import RoomCreationConfig from "./types/chat/RoomCreationConfig";
+import Transaction from "./components/db/Transaction";
+import MessageCreationConfig from "./types/chat/MessageCreationConfig";
 
 const app = express();
 const http = require("http").Server(app);
@@ -30,7 +34,7 @@ app.use(cors({
 const testFolder = __dirname + '/controllers';
 fs.readdir(testFolder, (_, files) => {
     files.forEach(file => {
-        /^.*.controller.ts$/.test(file) && new (require(testFolder + '/' + file)).default();
+        /^.*\.controller\.ts$/.test(file) && new (require(testFolder + '/' + file)).default();
     });
 });
 
@@ -53,13 +57,32 @@ io.on("connection", function (socket: Socket) {
             return;
         }
 
-        user.lastSeen = DateHelper.now().toUTCString();
+        user.lastSeen = DateHelper.now();
         await user.save();
     });
 
-    socket.on('room.message.send', async (data) => {
+    socket.on('room.create', async (data: RoomCreationConfig) => {
+        const transaction = await new Transaction().begin();
+        try {
+            const newRoom = await Room.new(data);
+            if (!newRoom) {
+                throw new Error();
+            }
+
+            await transaction.commit();
+
+            for (const userId of [data.creatorId, data.with]) {
+                io.emit(`user.${userId}.invited`, newRoom.getAttributes());
+            }
+        }
+        catch (e) {
+            await transaction.rollback();
+        }
+    })
+
+    socket.on('room.message.send', async (data: MessageCreationConfig) => {
         const model = new Message({
-            creationDate: DateHelper.now().toUTCString(),
+            creationDate: DateHelper.now(),
             userId: data.userId,
             roomId: data.roomId,
             contents: data.contents

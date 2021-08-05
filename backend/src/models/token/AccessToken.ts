@@ -33,4 +33,9 @@ export default class AccessToken extends ActiveRecord {
     public set isBlacklisted(value: boolean) {
         this._is_blacklisted = value;
     }
+
+    public async blacklist() {
+        this.isBlacklisted = true;
+        return await this.save();
+    }
 }

@@ -10,7 +10,7 @@ export default class RoomUser extends ActiveRecord {
     private _join_date: string;
 
     public static tableName() {
-        return 'message.room_user';
+        return 'chat.room_user';
     }
 
     public static get columns() {

@@ -1,6 +1,9 @@
 export default class StringHelper {
     public static escape(data: any, char = '"') {
         if (typeof data === typeof '') {
+
+            data = (<string>data).replace('"', '\"').replace("'", "\'");
+
             if (StringHelper.isTableName(data)) {
                 return (data as string).split('.').map(piece => char + piece + char).join('.')
             }

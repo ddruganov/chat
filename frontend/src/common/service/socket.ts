@@ -1,6 +1,8 @@
+import router from "@/router";
 import { store } from "@/store";
 import { authStore } from "@/store/modules/auth.store";
-import { messageStore, RECEIVE_MESSAGE } from "@/store/modules/message.store";
+import { ADD_ROOM, chatStore, CHAT_STORE_NAMESPACE, LOAD_ROOMS, RECEIVE_MESSAGE, SEND_MESSAGE, SET_ROOMS, START_CHAT } from "@/store/modules/chat.store";
+import Room from "@/types/chat/Room";
 import { io, Socket } from "socket.io-client";
 
 export default class ChatSocket {
@@ -12,12 +14,12 @@ export default class ChatSocket {
     }
 
     get rooms() {
-        return messageStore.context(store).state.rooms;
+        return chatStore.context(store).state.rooms;
     }
 
     constructor() {
         store.subscribe((mutation) => {
-            if (mutation.type === 'message/setRooms') {
+            if (mutation.type === [CHAT_STORE_NAMESPACE, SET_ROOMS].join('/')) {
                 this.socket?.disconnect();
                 this.socket = io("http://localhost:3000");
                 this.socket.emit('connection.handshake', {
@@ -26,10 +28,18 @@ export default class ChatSocket {
 
                 this.bootstrap();
             }
+
+            if (mutation.type === [CHAT_STORE_NAMESPACE, START_CHAT].join('/')) {
+                const eventName = 'room.create';
+                this.socket?.emit(eventName, {
+                    creatorId: this.authenticatedUser.id,
+                    with: mutation.payload.with
+                });
+            }
         });
 
         store.subscribeAction((action) => {
-            if (action.type === 'message/sendMessage') {
+            if (action.type === [CHAT_STORE_NAMESPACE, SEND_MESSAGE].join('/')) {
                 const eventName = 'room.message.send';
                 this.socket?.emit(eventName, action.payload);
             }
@@ -43,13 +53,22 @@ export default class ChatSocket {
         window.removeEventListener('beforeunload', disconnect);
         window.addEventListener('beforeunload', disconnect);
 
-        this.rooms.forEach(room => {
-            const eventName = `room.${room.id}.message.receive`;
-            const listener = (data: any) => {
-                messageStore.context(store).dispatch(RECEIVE_MESSAGE, data);
-            };
-            this.socket?.off(eventName, listener);
-            this.socket?.on(eventName, listener);
+        this.rooms.forEach(room => this.bootstrapRoom(room));
+
+        this.socket?.on(`user.${this.authenticatedUser.id}.invited`, (data: Room) => {
+            chatStore.context(store).dispatch(LOAD_ROOMS)
+                .then(success => {
+                    success && router.push({ path: `/room/${data.id}` });
+                });
         });
+    }
+
+    private bootstrapRoom(room: Room) {
+        const eventName = `room.${room.id}.message.receive`;
+        const listener = (data: any) => {
+            chatStore.context(store).dispatch(RECEIVE_MESSAGE, data);
+        };
+        this.socket?.off(eventName, listener);
+        this.socket?.on(eventName, listener);
     }
 }

@@ -3,7 +3,7 @@
   z-index: 2;
   background: $white;
   border-right: 1px solid $light-gray;
-  .header {
+  & > .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -25,11 +25,9 @@
       }
     }
   }
-  .search {
-    padding: 1rem;
-    border-bottom: 1px solid $light-gray;
-  }
   .rooms {
+    display: flex;
+    flex-direction: column;
     .room {
       display: flex;
       flex-direction: column;
@@ -38,12 +36,24 @@
         cursor: pointer;
       }
 
-      & > .name {
-        color: $blue;
+      & > .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        & > .name {
+          color: $blue;
+        }
+        & > .delete-chat {
+          color: $gray;
+          &:hover {
+            color: $blue;
+          }
+        }
       }
 
       padding: 1rem;
       border-bottom: 1px solid $light-gray;
+      transition: 0.125s all linear;
 
       &.active,
       &:hover {

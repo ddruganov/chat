@@ -9,7 +9,7 @@ export default class Message extends ActiveRecord {
     private _contents: string;
 
     public static tableName() {
-        return 'message.message';
+        return 'chat.message';
     }
 
     public static get columns() {
