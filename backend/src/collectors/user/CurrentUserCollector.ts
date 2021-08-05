@@ -12,7 +12,8 @@ export default class CurrentUserCollector extends BaseCollector {
     public get() {
         return {
             id: this.user.id,
-            name: this.user.name
+            name: this.user.name,
+            nick: this.user.nick
         };
     }
 

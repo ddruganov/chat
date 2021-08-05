@@ -53,7 +53,8 @@ export default class RoomAllCollector extends BaseCollector {
             room.users = await new Query()
                 .select({
                     'u.id': 'id',
-                    'u.name': 'name'
+                    'u.name': 'name',
+                    'u.nick': 'nick'
                 })
                 .from({ alias: 'ru', tableName: RoomUser.tableName() })
                 .join({

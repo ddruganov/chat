@@ -44,7 +44,7 @@ export default class User extends ActiveRecord {
 
     public set email(value: string) {
         this._email = value;
-        this.nick = value.split('@')[0];
+        this.nick = value.split('@')[0].replace('.', '_');
     }
 
     public set password(value: string) {

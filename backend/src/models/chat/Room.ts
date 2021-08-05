@@ -61,7 +61,6 @@ export default class Room extends ActiveRecord {
     }
 
     public async delete() {
-
         const deleteMessagesSuccess = await Command
             .delete()
             .from({ tableName: Message.tableName() })

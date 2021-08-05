@@ -43,7 +43,7 @@ export default class InsertCommand extends DatabaseAccessor {
             for (const entry of rows) {
                 for (const key in entry) {
                     if (entry[key] instanceof Date) {
-                        entry[key] = DateHelper.convert(entry[key]).toUTCString();
+                        entry[key] = DateHelper.format(entry[key]);
                     }
                 }
             }

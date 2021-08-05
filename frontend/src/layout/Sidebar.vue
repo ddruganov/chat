@@ -32,9 +32,8 @@
         </div>
       </template>
       <template #body>
-        <div class="input-wrapper" data-label="имя">
-          <input class="input" type="text" v-model="authenticatedUser.name" @change="() => saveUser()" />
-        </div>
+        <form-input class="mb-3" type="text" label="имя" v-model="authenticatedUser.name" @change="() => saveUser()" />
+        <form-input type="text" label="псевдоним" v-model="authenticatedUser.nick" @change="() => saveUser()" />
       </template>
       <template #footer>
         <button class="button w-fit-content" @click="() => logout()">выйти</button>
@@ -71,7 +70,9 @@ export default class Sidebar extends Vue {
   }
 
   get rooms() {
-    return chatStore.context(this.$store).state.rooms;
+    return chatStore
+      .context(this.$store)
+      .state.rooms.filter((room) => room.messages.length || room.creatorId === this.authenticatedUser.id);
   }
 
   mounted() {
@@ -79,7 +80,6 @@ export default class Sidebar extends Vue {
   }
 
   private openRoom(roomId: number) {
-    // this.$emit("toggleSidebar");
     this.$router.push({ path: `/room/${roomId}` }).then(() => {
       chatStore.context(this.$store).dispatch(RELOAD_MESSAGES, { scrollToBottom: true });
     });
@@ -117,7 +117,7 @@ export default class Sidebar extends Vue {
       return room.name;
     }
 
-    return room.users.filter((u) => u.id !== this.authenticatedUser.id)[0].name;
+    return room.users.filter((u) => u.id !== this.authenticatedUser?.id)[0].name;
   }
 
   private logout() {

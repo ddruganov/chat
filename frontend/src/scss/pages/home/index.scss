@@ -21,20 +21,40 @@
         max-width: 375px;
         padding: 1rem;
         border-radius: $border-radius-smooth;
-        background: rgba($blue, 0.125);
+        background: $darker-blue;
         margin-bottom: 1rem;
+        position: relative;
+
+        &::before {
+          position: absolute;
+          content: "";
+          z-index: 0;
+          top: 50%;
+          left: 0;
+          transform: translateY(-50%) translateX(-50%) rotate(45deg);
+          border: 1rem solid $darker-blue;
+          border-top: none;
+          border-right: none;
+        }
 
         .contents {
           margin-bottom: 0.25rem;
+          color: $white;
+          z-index: 1;
         }
         .creation-date {
-          color: $gray;
+          color: $white;
           font-size: 0.7rem;
+          z-index: 1;
         }
 
         &.my {
-          background: rgba($red, 0.125);
+          background: $blue;
           margin-left: auto;
+          &::before {
+            border-color: $blue;
+            left: 100%;
+          }
         }
       }
     }

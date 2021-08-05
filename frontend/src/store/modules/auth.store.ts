@@ -4,7 +4,7 @@ import { Getters, Mutations, Actions, Module } from "vuex-smart-module";
 
 // State
 class AuthState {
-  user: User = {};
+  user?: User = undefined;
   isAuthenticated: boolean = false;
 }
 
@@ -14,7 +14,7 @@ class AuthGetters extends Getters<AuthState> {
     return this.state.isAuthenticated;
   }
   get authenticatedUser() {
-    return this.state.user;
+    return this.state.user!;
   }
 }
 

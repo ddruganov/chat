@@ -9,7 +9,6 @@ import DateHelper from "./components/helpers/DateHelper";
 import Message from "./models/chat/Message";
 import fs from 'fs';
 import Room from "./models/chat/Room";
-import RoomUser from "./models/chat/RoomUser";
 import RoomCreationConfig from "./types/chat/RoomCreationConfig";
 import Transaction from "./components/db/Transaction";
 import MessageCreationConfig from "./types/chat/MessageCreationConfig";
