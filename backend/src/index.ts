@@ -77,6 +77,19 @@ io.on("connection", function (socket: Socket) {
         catch (e) {
             await transaction.rollback();
         }
+    });
+
+    socket.on('room.delete', async (data: { id: number }) => {
+        const room = await Room.findOne<Room>({ left: 'id', value: '=', right: data.id });
+        if (!room) {
+            return;
+        }
+
+        if (!(await room.delete())) {
+            return;
+        }
+
+        io.emit(`room.${room.id}.deleted`);
     })
 
     socket.on('room.message.send', async (data: MessageCreationConfig) => {

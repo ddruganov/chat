@@ -21,9 +21,6 @@
         <i class="send fas fa-paper-plane" @click="() => sendMessage()" />
       </form>
     </div>
-    <div v-else class="no-room-selected text-muted">
-      выберите чат из меню слева
-    </div>
   </div>
 </template>
 

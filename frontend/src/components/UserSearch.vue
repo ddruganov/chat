@@ -24,17 +24,21 @@ export default class UserSearch extends Vue {
   private searchResult: User[] = [];
 
   private performSearch() {
-    this.search &&
-      Api.user
-        .search(this.search)
-        .then((response) => {
-          if (!response.success) {
-            throw new Error(response.error);
-          }
+    if (!this.search) {
+      this.searchResult = [];
+      return;
+    }
 
-          this.searchResult = response.data;
-        })
-        .catch((e) => this.$notifications.error(e.message));
+    Api.user
+      .search(this.search)
+      .then((response) => {
+        if (!response.success) {
+          throw new Error(response.error);
+        }
+
+        this.searchResult = response.data;
+      })
+      .catch((e) => this.$notifications.error(e.message));
   }
 
   private startChat(user: User) {

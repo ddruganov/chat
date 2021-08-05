@@ -24,6 +24,7 @@ export const RECEIVE_MESSAGE = "receiveMessage";
 export const ADD_MESSAGE = "addMessage";
 export const RELOAD_MESSAGES = "reloadMessages";
 export const START_CHAT = 'startChat';
+export const DELETE_ROOM = 'deleteRoom';
 class ChatActions extends Actions<ChatState, ChatGetters, ChatMutations, ChatActions> {
   [LOAD_ROOMS]() {
     return new Promise(resolve => {
@@ -81,6 +82,11 @@ class ChatActions extends Actions<ChatState, ChatGetters, ChatMutations, ChatAct
       return
     }
     this.commit(START_CHAT, payload);
+  }
+
+  [DELETE_ROOM](payload: any) {
+    // used by socket to track deleted rooms
+    return undefined;
   }
 }
 

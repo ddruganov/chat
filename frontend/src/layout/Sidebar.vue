@@ -10,13 +10,13 @@
         :key="room.id"
         class="room"
         :class="{ active: room.id === currentRoomId }"
-        @click="() => openRoom(room.id)"
+        @click="openRoom(room.id)"
       >
         <div class="header">
           <div class="name">
             {{ getRoomName(room) }}
           </div>
-          <i class="delete-chat fas fa-trash" @click.prevent="() => deleteRoom(room.id)" />
+          <i class="delete-chat fas fa-trash" @click.stop="deleteRoom(room.id)" />
         </div>
         <div class="last-message text-muted">
           {{ getLastMessage(room) }}
@@ -32,8 +32,8 @@
         </div>
       </template>
       <template #body>
-        <form-input class="mb-3" type="text" label="имя" v-model="authenticatedUser.name" @change="() => saveUser()" />
-        <form-input type="text" label="псевдоним" v-model="authenticatedUser.nick" @change="() => saveUser()" />
+        <form-input class="mb-3" type="text" label="имя" v-model="authenticatedUser.name" @change="saveUser()" />
+        <form-input type="text" label="псевдоним" v-model="authenticatedUser.nick" @change="saveUser()" />
       </template>
       <template #footer>
         <button class="button w-fit-content" @click="() => logout()">выйти</button>
@@ -49,7 +49,7 @@ import ModalWindow from "@/components/ModalWindow.vue";
 import SaveIndicator from "@/components/SaveIndicator.vue";
 import UserSearch from "@/components/UserSearch.vue";
 import { authStore, GET_CURRENT_USER } from "@/store/modules/auth.store";
-import { LOAD_ROOMS, chatStore, RELOAD_MESSAGES } from "@/store/modules/chat.store";
+import { LOAD_ROOMS, chatStore, RELOAD_MESSAGES, DELETE_ROOM } from "@/store/modules/chat.store";
 import Room from "@/types/chat/Room";
 import { Options, Vue } from "vue-class-component";
 
@@ -134,16 +134,7 @@ export default class Sidebar extends Vue {
   }
 
   private deleteRoom(id: number) {
-    Api.chat
-      .deleteRoom(id)
-      .then((response) => {
-        if (!response.success) {
-          throw new Error(response.error);
-        }
-
-        chatStore.context(this.$store).dispatch(LOAD_ROOMS);
-      })
-      .catch((e) => this.$notifications.error(e.message));
+    chatStore.context(this.$store).dispatch(DELETE_ROOM, { id: id });
   }
 }
 </script>

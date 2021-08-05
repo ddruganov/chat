@@ -1,7 +1,7 @@
 import router from "@/router";
 import { store } from "@/store";
 import { authStore } from "@/store/modules/auth.store";
-import { ADD_ROOM, chatStore, CHAT_STORE_NAMESPACE, LOAD_ROOMS, RECEIVE_MESSAGE, SEND_MESSAGE, SET_ROOMS, START_CHAT } from "@/store/modules/chat.store";
+import { ADD_ROOM, chatStore, CHAT_STORE_NAMESPACE, DELETE_ROOM, LOAD_ROOMS, RECEIVE_MESSAGE, SEND_MESSAGE, SET_ROOMS, START_CHAT } from "@/store/modules/chat.store";
 import Room from "@/types/chat/Room";
 import { io, Socket } from "socket.io-client";
 
@@ -43,6 +43,11 @@ export default class ChatSocket {
                 const eventName = 'room.message.send';
                 this.socket?.emit(eventName, action.payload);
             }
+
+            if (action.type === [CHAT_STORE_NAMESPACE, DELETE_ROOM].join('/')) {
+                const eventName = 'room.delete';
+                this.socket?.emit(eventName, action.payload);
+            }
         });
     }
 
@@ -58,15 +63,29 @@ export default class ChatSocket {
         this.socket?.on(`user.${this.authenticatedUser.id}.invited`, (data: Room) => {
             chatStore.context(store).dispatch(LOAD_ROOMS)
                 .then(success => {
-                    success && router.push({ path: `/room/${data.id}` });
+                    if (!success || data.creatorId !== this.authenticatedUser.id) {
+                        return;
+                    }
+
+                    router.push({ path: `/room/${data.id}` });
                 });
         });
     }
 
     private bootstrapRoom(room: Room) {
-        const eventName = `room.${room.id}.message.receive`;
-        const listener = (data: any) => {
+        let eventName = `room.${room.id}.message.receive`;
+        let listener = (data: any) => {
             chatStore.context(store).dispatch(RECEIVE_MESSAGE, data);
+        };
+        this.socket?.off(eventName, listener);
+        this.socket?.on(eventName, listener);
+
+        eventName = `room.${room.id}.deleted`;
+        listener = () => {
+            chatStore.context(store).dispatch(LOAD_ROOMS);
+            if (Number(router.currentRoute.value.params.roomId) === room.id) {
+                router.push({ path: '/' });
+            }
         };
         this.socket?.off(eventName, listener);
         this.socket?.on(eventName, listener);

@@ -1,6 +1,7 @@
 .link {
   color: $blue;
   cursor: pointer;
+  transition: 0.25s linear all;
   &:hover {
     color: $dark-blue;
     text-decoration: underline;
