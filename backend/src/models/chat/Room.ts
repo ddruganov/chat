@@ -1,6 +1,8 @@
-import ActiveRecord from "../../components/db/ActiveRecord";
-import Command from "../../components/db/Command";
+import ActiveRecord from "../../components/db/ar/ActiveRecord";
+import Command from "../../components/db/commands/Command";
+import TableField from "../../components/decorators/TableFieldDecorator";
 import DateHelper from "../../components/helpers/DateHelper";
+import RequiredValidator from "../../components/validators/base/RequiredValidator";
 import RoomCreationConfig from "../../types/chat/RoomCreationConfig";
 import User from "../user/User";
 import Message from "./Message";
@@ -8,29 +10,19 @@ import RoomUser from "./RoomUser";
 
 export default class Room extends ActiveRecord {
 
-    private _id: number;
-    private _name: string;
-    private _creator_id: number;
-    private _creation_date: string;
+    @TableField() id: number;
+    @TableField() name: string;
+    @TableField() creatorId: number;
+    @TableField() creationDate: string;
 
     public static tableName() {
         return 'chat.room';
     }
 
-    public static get columns() {
-        return ['id', 'name', 'creator_id', 'creation_date'];
-    }
-
-    public get id() {
-        return this._id;
-    }
-
-    public get name() {
-        return this._name;
-    }
-
-    public get creatorId() {
-        return this._creator_id;
+    public get rules() {
+        return [
+            { columns: ['name', 'creatorId', 'creationDate'], validator: RequiredValidator }
+        ];
     }
 
     public get creator() {
@@ -38,26 +30,6 @@ export default class Room extends ActiveRecord {
             const user = await User.findOne<User>({ left: 'id', value: '=', right: this.creatorId });
             resolve(user);
         });
-    }
-
-    public get creationDate() {
-        return this._creation_date;
-    }
-
-    public set id(value: number) {
-        this._id = value;
-    }
-
-    public set name(value: string) {
-        this._name = value;
-    }
-
-    public set creatorId(value: number) {
-        this._creator_id = value;
-    }
-
-    public set creationDate(value: string) {
-        this._creation_date = value;
     }
 
     public async delete() {

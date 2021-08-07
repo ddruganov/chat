@@ -3,7 +3,7 @@ import ExecutionResult from "../../../components/ExecutionResult";
 import { INVALID_AUTH } from "../../../config/codes";
 import TokenHelper from "../../../components/helpers/TokenHelper";
 import Room from "../../../models/chat/Room";
-import Transaction from "../../../components/db/Transaction";
+import Transaction from "../../../components/db/query/Transaction";
 
 export default async function (req: Request, res: Response) {
     const user = await TokenHelper.check(req, res);

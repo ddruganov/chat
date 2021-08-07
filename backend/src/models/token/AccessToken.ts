@@ -1,37 +1,21 @@
-import ActiveRecord from "../../components/db/ActiveRecord";
+import ActiveRecord from "../../components/db/ar/ActiveRecord";
+import TableField from "../../components/decorators/TableFieldDecorator";
+import RequiredValidator from "../../components/validators/base/RequiredValidator";
 
 export default class AccessToken extends ActiveRecord {
 
-    private _id: number;
-    private _value: string;
-    private _is_blacklisted: boolean;
+    @TableField() id: number;
+    @TableField() value: string;
+    @TableField() isBlacklisted: boolean;
 
     public static tableName() {
         return 'token.access_token';
     }
 
-    public static get columns() {
-        return ['id', 'value', 'is_blacklisted'];
-    }
-
-    public get id() {
-        return this._id;
-    }
-
-    public get value() {
-        return this._value;
-    }
-
-    public get isBlacklisted() {
-        return this._is_blacklisted;
-    }
-
-    public set value(value: string) {
-        this._value = value;
-    }
-
-    public set isBlacklisted(value: boolean) {
-        this._is_blacklisted = value;
+    public get rules() {
+        return [
+            { columns: ['value', 'isBlacklisted'], validator: RequiredValidator }
+        ];
     }
 
     public async blacklist() {

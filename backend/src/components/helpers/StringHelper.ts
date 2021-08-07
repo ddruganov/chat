@@ -8,7 +8,11 @@ export default class StringHelper {
                 return (data as string).split('.').map(piece => char + piece + char).join('.')
             }
 
-            return char + data + char;
+            return [char, char].join(data);
+        }
+
+        if ([null, undefined].some(nullish => data === nullish)) {
+            return String(null);
         }
 
         return data;
@@ -24,5 +28,9 @@ export default class StringHelper {
 
     public static snakeToCamel(data: string) {
         return data.split('_').map((s, i) => i === 0 ? s : (s.charAt(0).toUpperCase() + s.slice(1))).join('');
+    }
+
+    public static camelToSnake(data: string) {
+        return data.split(/(?=[A-Z])/).map((s) => s.toLowerCase()).join('_');
     }
 }

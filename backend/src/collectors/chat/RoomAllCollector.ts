@@ -1,4 +1,4 @@
-import Query from "../../components/db/Query";
+import Query from "../../components/db/query/Query";
 import Message from "../../models/chat/Message";
 import Room from "../../models/chat/Room";
 import RoomUser from "../../models/chat/RoomUser";

@@ -12,5 +12,5 @@ export default async function (req: Request, res: Response) {
     user.setAttributes(req.body.user);
     const saveSuccess = await user.save();
 
-    res.send(new ExecutionResult(saveSuccess).asJson());
+    res.send(new ExecutionResult(saveSuccess, { errors: user.firstErrors }).asJson());
 }

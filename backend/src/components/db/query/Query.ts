@@ -1,15 +1,15 @@
-import SelectClauseParser from './clauseParsers/SelectClauseParser';
-import FromClauseParser from './clauseParsers/FromClauseParser';
-import JoinClauseParser from './clauseParsers/JoinClauseParser';
-import WhereClauseParser from './clauseParsers/WhereClauseParser';
-import Clauses from "./clauses/Clauses";
-import Select from "./clauses/Select";
-import From from "./clauses/From";
-import Join from "./clauses/Join";
-import Where from "./clauses/where/Where";
-import Operator from "./clauses/where/Operator";
-import Order from "./clauses/Order";
-import DateHelper from "../helpers/DateHelper";
+import DateHelper from "../../helpers/DateHelper";
+import FromClauseParser from "../clauseParsers/FromClauseParser";
+import JoinClauseParser from "../clauseParsers/JoinClauseParser";
+import SelectClauseParser from "../clauseParsers/SelectClauseParser";
+import WhereClauseParser from "../clauseParsers/WhereClauseParser";
+import Clauses from "../clauses/Clauses";
+import From from "../clauses/From";
+import Join from "../clauses/Join";
+import Order from "../clauses/Order";
+import Select from "../clauses/Select";
+import Operator from "../clauses/where/Operator";
+import Where from "../clauses/where/Where";
 import DatabaseAccessor from "./DatabaseAccessor";
 
 export default class Query extends DatabaseAccessor {

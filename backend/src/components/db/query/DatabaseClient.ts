@@ -1,5 +1,5 @@
 import { Client } from "pg";
-import databaseConfig from "../../config/database.config";
+import databaseConfig from "../../../config/database.config";
 
 export default class DatabaseClient {
 

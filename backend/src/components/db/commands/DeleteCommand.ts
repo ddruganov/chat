@@ -1,8 +1,8 @@
-import WhereClauseParser from "./clauseParsers/WhereClauseParser";
-import FromClauseParser from "./clauseParsers/FromClauseParser";
-import From from "./clauses/From";
-import Where from "./clauses/where/Where";
-import DatabaseAccessor from "./DatabaseAccessor";
+import FromClauseParser from "../clauseParsers/FromClauseParser";
+import WhereClauseParser from "../clauseParsers/WhereClauseParser";
+import From from "../clauses/From";
+import Where from "../clauses/where/Where";
+import DatabaseAccessor from "../query/DatabaseAccessor";
 
 export default class DeleteCommand extends DatabaseAccessor {
     private sql = '';
@@ -37,6 +37,8 @@ export default class DeleteCommand extends DatabaseAccessor {
             await this._db.query(this.sql);
         }
         catch (e) {
+            console.log('delete error:', e.message);
+            console.log('executed sql:', this.sql);
             return false;
         }
 

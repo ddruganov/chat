@@ -1,26 +1,15 @@
-import { MASTER_PASSWORD, PASS_PREFIX } from "../../../config/pass.config";
+import { PASS_PREFIX } from "../../../config/pass.config";
 import BaseValidator from "../BaseValidator";
 
 export default class PasswordValidator extends BaseValidator {
-    private password: string;
-
-    public constructor(password: string) {
-        super();
-
-        this.password = password;
-    }
-
     public async validate() {
-
-        if (this.password === MASTER_PASSWORD) {
-            return true;
-        }
-
-        if (!this.password.startsWith(PASS_PREFIX)) {
+        if (!this._value.startsWith(PASS_PREFIX)) {
+            this._error = 'Пароль должен начинаться со спецаильного префикса';
             return false;
         }
 
-        if (this.password.length !== (PASS_PREFIX.length + 32)) {
+        if (this._value.length !== (PASS_PREFIX.length + 32)) {
+            this._error = 'Пароль не захеширован';
             return false;
         }
 

@@ -1,4 +1,4 @@
-import app from "../..";
+import App from "../../service/app";
 import ControllerInterface from "../routing/controller.interface";
 
 export default function Controller(constructor: Function) {
@@ -8,6 +8,6 @@ export default function Controller(constructor: Function) {
     const routes = controller.routes;
     for (let routeName in routes) {
         const route = routes[routeName];
-        app[route.method]('/' + baseRoute + '/' + routeName, route.handler);
+        App.instance.expressApp[route.method]('/' + baseRoute + '/' + routeName, route.handler);
     }
 }

@@ -1,5 +1,5 @@
 import { QueryResult } from "pg";
-import DatabaseAccessor from "./DatabaseAccessor";
+import DatabaseAccessor from "../query/DatabaseAccessor";
 import DeleteCommand from "./DeleteCommand";
 import InsertCommand from "./InsertCommand";
 import UpdateCommand from "./UpdateCommand";

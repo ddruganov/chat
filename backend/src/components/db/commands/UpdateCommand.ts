@@ -1,8 +1,8 @@
-import StringHelper from "../helpers/StringHelper";
-import WhereClauseParser from "./clauseParsers/WhereClauseParser";
-import Where from "./clauses/where/Where";
-import Columns from "./Columns";
-import DatabaseAccessor from "./DatabaseAccessor";
+import Columns from "../../../types/db/Columns";
+import StringHelper from "../../helpers/StringHelper";
+import WhereClauseParser from "../clauseParsers/WhereClauseParser";
+import Where from "../clauses/where/Where";
+import DatabaseAccessor from "../query/DatabaseAccessor";
 
 export default class UpdateCommand extends DatabaseAccessor {
     private sql: string;
@@ -28,11 +28,16 @@ export default class UpdateCommand extends DatabaseAccessor {
     public build() {
         let set = [];
         for (const key in this._columns) {
-            set.push(key + ' = ' + StringHelper.escape(this._columns[key], "'"));
+            set.push([key, '=', StringHelper.escape(this._columns[key], "'")].join(' '));
         }
 
-        this.sql = 'update ' + StringHelper.escape(this._tableName) + ' set ' + set.join(', ');
-        this._where && (this.sql += ' where ' + new WhereClauseParser(this._where).parse());
+        this.sql = ['update', StringHelper.escape(this._tableName), 'set', set.join(', ')].join(' ');
+
+        if (!this._where) {
+            return;
+        }
+
+        this.sql += ['', 'where', new WhereClauseParser(this._where).parse()].join(' ');
     }
 
     public async execute() {
@@ -42,6 +47,8 @@ export default class UpdateCommand extends DatabaseAccessor {
             await this._db.query(this.sql);
         }
         catch (e) {
+            console.log('update error:', e.message);
+            console.log('executed sql:', this.sql);
             return false;
         }
 

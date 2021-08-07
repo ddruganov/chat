@@ -26,13 +26,13 @@ export default class DateHelper {
         return [
             [
                 date.getUTCFullYear(),
-                ('0' + (date.getUTCMonth() + 1)).slice(0, 2),
-                ('0' + date.getUTCDate()).slice(0, 2)
+                String(date.getUTCMonth() + 1).padStart(2, '0'),
+                String(date.getUTCDate()).padStart(2, '0'),
             ].join('-'),
             [
-                ('0' + date.getUTCHours()).slice(0, 2),
-                ('0' + date.getUTCMinutes()).slice(0, 2),
-                ('0' + date.getUTCSeconds()).slice(0, 2)
+                String(date.getUTCHours()).padStart(2, '0'),
+                String(date.getUTCMinutes()).padStart(2, '0'),
+                String(date.getUTCSeconds()).padStart(2, '0')
             ].join(':')
         ].join(' ');
     }
