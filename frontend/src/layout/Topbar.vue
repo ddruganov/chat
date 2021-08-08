@@ -3,17 +3,18 @@
     <div v-if="currentRoom" class="open-room">
       <go-back link="/" />
       <span class="name">{{ currentRoomName }}</span>
-      <span class="user-count link" modal-trigger="showRoomUsers">{{ currentRoomUserCount }}</span>
-
-      <modal-window id="showRoomUsers" hideFooter>
-        <template #title>Пользователи</template>
-        <template #body>
-          <div v-for="user in currentRoom.users" :key="user.id">
-            <span>{{ user.name }}</span>
-            <span class="text-muted ms-1">(@{{ user.nick }})</span>
-          </div>
-        </template>
-      </modal-window>
+      <template v-if="currentRoom.users.length > 2">
+        <span class="user-count link" modal-trigger="showRoomUsers">{{ currentRoomUserCount }}</span>
+        <modal-window id="showRoomUsers" hideFooter>
+          <template #title>Пользователи</template>
+          <template #body>
+            <div v-for="user in currentRoom.users" :key="user.id">
+              <span>{{ user.name }}</span>
+              <span class="text-muted ms-1">(@{{ user.nick }})</span>
+            </div>
+          </template>
+        </modal-window>
+      </template>
     </div>
   </header>
 </template>

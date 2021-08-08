@@ -90,9 +90,10 @@ export default class Query extends DatabaseAccessor {
         return this;
     }
 
-    public async all() {
+    public async all<T = any>(): Promise<T[] | undefined> {
         this.build();
 
+        // console.log(this.sql);
         try {
             const res = await this._db.query(this.sql);
             if (!res.rowCount) {
@@ -111,6 +112,8 @@ export default class Query extends DatabaseAccessor {
             return rows;
         }
         catch (e) {
+            console.log('query error:', e.message);
+            console.log('executed query:', this.sql);
             return undefined;
         }
     }

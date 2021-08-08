@@ -1,26 +1,24 @@
 <template>
-  <div :id="id" @click="closeModal" class="modal-window">
-    <transition name="fade">
-      <div v-if="show" class="modal" :class="{ [modalClass]: modalClass }">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div v-if="!hideHeader" class="modal-header">
-              <div class="d-flex align-items-center justify-content-between w-100">
-                <slot name="title" />
-                <i class="close-icon fas fa-times" @click="closeModal" />
-              </div>
+  <transition name="fade">
+    <div v-if="show" :id="id" @click="closeModal" class="mw" :class="{ show: show }">
+      <div class="backdrop" :class="{ [modalClass]: modalClass }">
+        <div class="content-wrapper">
+          <div v-if="!hideHeader" class="header">
+            <div class="header-wrapper">
+              <slot name="title" />
+              <i class="close-icon fas fa-times" @click="closeModal" />
             </div>
-            <div class="modal-body">
-              <slot name="body" />
-            </div>
-            <div v-if="!hideFooter" class="modal-footer">
-              <slot name="footer" />
-            </div>
+          </div>
+          <div class="body">
+            <slot name="body" />
+          </div>
+          <div v-if="!hideFooter" class="footer">
+            <slot name="footer" />
           </div>
         </div>
       </div>
-    </transition>
-  </div>
+    </div>
+  </transition>
 </template>
 
 <style lang="scss" scoped>
@@ -52,6 +50,14 @@ export default class ModalWindow extends Vue {
 
   mounted() {
     this.load();
+
+    const body = document.querySelector("body")!;
+    const app = body.querySelector("#app")!;
+    body.insertBefore(this.$el, app);
+  }
+
+  unmounted() {
+    document.querySelector("body")!.removeChild(this.$el);
   }
 
   load() {

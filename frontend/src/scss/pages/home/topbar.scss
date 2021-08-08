@@ -1,4 +1,6 @@
 .topbar {
+  display: flex;
+  align-items: center;
   background: $white;
   min-height: $topbar-height;
   height: $topbar-height;

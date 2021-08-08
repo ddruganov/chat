@@ -1,2 +1,9 @@
 @import "input";
 @import "switch";
+
+.form {
+  width: 100%;
+  .input-wrapper:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+}

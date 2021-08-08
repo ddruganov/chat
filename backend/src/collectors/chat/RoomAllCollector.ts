@@ -1,9 +1,11 @@
 import Query from "../../components/db/query/Query";
+import DateHelper from "../../components/helpers/DateHelper";
 import Message from "../../models/chat/Message";
 import Room from "../../models/chat/Room";
 import RoomUser from "../../models/chat/RoomUser";
 import User from "../../models/user/User";
 import BaseCollector from "../base/BaseCollector";
+import MessageAllCollector from "./MessageAllCollector";
 
 type FullRoomData = {
     id: number;
@@ -39,16 +41,7 @@ export default class RoomAllCollector extends BaseCollector {
         }
 
         for (const room of rooms) {
-            room.messages = await new Query()
-                .select({
-                    id: 'id',
-                    creation_date: 'creationDate',
-                    user_id: 'userId',
-                    contents: 'contents'
-                })
-                .from({ tableName: Message.tableName() })
-                .where({ left: 'room_id', value: '=', right: room.id })
-                .all() || [];
+            room.messages = await new MessageAllCollector().setRoomId(room.id).setPage(1).get();
 
             room.users = await new Query()
                 .select({

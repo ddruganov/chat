@@ -15,7 +15,7 @@ $label-offset-focus: -9px;
     width: 100%;
     resize: none;
     &:focus {
-      border: 1px solid $blue;
+      border: 1px solid $primary;
     }
 
     &:valid {
@@ -26,7 +26,7 @@ $label-offset-focus: -9px;
       &:focus {
         & + .label {
           top: $label-offset-focus !important;
-          color: $blue;
+          color: $primary;
         }
       }
     }
@@ -38,7 +38,7 @@ $label-offset-focus: -9px;
       &:focus {
         & + .label {
           top: $label-offset-focus;
-          color: $blue;
+          color: $primary;
           background: $white;
         }
       }

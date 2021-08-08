@@ -32,11 +32,13 @@
         </div>
       </template>
       <template #body>
-        <form-input class="mb-3" type="text" label="имя" v-model="authenticatedUser.name" @change="saveUser()" />
-        <form-input type="text" label="псевдоним" v-model="authenticatedUser.nick" @change="saveUser()" />
+        <form class="form">
+          <form-input type="text" label="имя" v-model="authenticatedUser.name" @change="saveUser()" />
+          <form-input type="text" label="псевдоним" v-model="authenticatedUser.nick" @change="saveUser()" />
+        </form>
       </template>
       <template #footer>
-        <button class="button w-fit-content" @click="() => logout()">выйти</button>
+        <button class="button danger w-fit-content" @click="() => logout()">выйти</button>
       </template>
     </modal-window>
   </div>
@@ -59,6 +61,8 @@ import { Options, Vue } from "vue-class-component";
 export default class Sidebar extends Vue {
   private saveCount: number = 0;
   private saveSuccess: boolean = false;
+  private userSaveErrors: { [key: string]: string } = {};
+
   private search: string = "";
 
   get currentRoomId() {
@@ -87,15 +91,20 @@ export default class Sidebar extends Vue {
 
   private saveUser() {
     ++this.saveCount;
+    this.userSaveErrors = {};
     Api.settings
       .saveUser(this.authenticatedUser)
       .then((response) => {
         this.saveSuccess = response.success;
 
-        if (!response.success) {
+        if (!response.success && response.error) {
           throw new Error(response.error);
         }
 
+        this.userSaveErrors = response.data.errors;
+        if (this.userSaveErrors) {
+          return;
+        }
         authStore.context(this.$store).dispatch(GET_CURRENT_USER);
       })
       .catch((e: Error) => this.$notifications.error(e.message))

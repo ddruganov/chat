@@ -17,5 +17,7 @@ export default async function Send(socket: Socket, data: MessageCreationConfig) 
     }
 
     const eventName = `room.${data.roomId}.message.receive`;
-    SocketService.instance.io.emit(eventName, model.getAttributes());
+    const modelAttributes = model.getAttributes();
+    modelAttributes.creationDate = DateHelper.verbose(String(modelAttributes.creationDate));
+    SocketService.instance.io.emit(eventName, modelAttributes);
 }

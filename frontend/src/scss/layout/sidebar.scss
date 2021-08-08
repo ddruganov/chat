@@ -17,10 +17,10 @@
       justify-content: space-evenly;
       * {
         font-size: 16px;
-        color: $blue;
+        color: $primary;
         cursor: pointer;
         &:hover {
-          color: $dark-blue;
+          color: $dark-primary;
         }
       }
     }
@@ -41,12 +41,13 @@
         align-items: center;
         justify-content: space-between;
         & > .name {
-          color: $blue;
+          color: $primary;
         }
         & > .delete-chat {
+          transition: 0.125s all linear;
           color: $gray;
           &:hover {
-            color: $blue;
+            color: $primary;
           }
         }
       }
@@ -57,7 +58,7 @@
 
       &.active,
       &:hover {
-        background-color: rgba($blue, 0.125);
+        background-color: rgba($primary, 0.125);
       }
     }
   }

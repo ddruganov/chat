@@ -21,7 +21,7 @@
         max-width: 375px;
         padding: 1rem;
         border-radius: $border-radius-smooth;
-        background: $darker-blue;
+        background: $black;
         margin-bottom: 1rem;
         position: relative;
 
@@ -32,9 +32,9 @@
           top: 50%;
           left: 0;
           transform: translateY(-50%) translateX(-50%) rotate(45deg);
-          border: 1rem solid $darker-blue;
-          border-top: none;
-          border-right: none;
+          width: 1rem;
+          height: 1rem;
+          background: $black;
         }
 
         .contents {
@@ -49,11 +49,13 @@
         }
 
         &.my {
-          background: $blue;
+          background: linear-gradient($darker-primary 0%, $primary 100%);
+          background-attachment: fixed;
           margin-left: auto;
           &::before {
-            border-color: $blue;
             left: 100%;
+            background: linear-gradient($darker-primary 0%, $primary 100%);
+            background-attachment: fixed;
           }
         }
       }
@@ -70,7 +72,7 @@
       }
       .send {
         font-size: 24px;
-        color: rgba($blue, 0.5);
+        color: rgba($primary, 0.5);
         cursor: pointer;
         margin: 0 1rem;
         height: 50px;
@@ -79,7 +81,7 @@
         align-items: center;
         justify-content: center;
         &:hover {
-          color: $blue;
+          color: $primary;
         }
       }
     }

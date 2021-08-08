@@ -18,7 +18,7 @@ class ChatGetters extends Getters<ChatState> {
 // Actions
 export const LOAD_ROOMS = 'loadRooms';
 export const ADD_ROOM = 'addRoom';
-export const LOAD_ROOM_MESSAGES = 'loadRoomMessage';
+export const PREPEND_ROOM_MESSAGES = 'prependRoomMessage';
 export const SEND_MESSAGE = "sendMessage";
 export const RECEIVE_MESSAGE = "receiveMessage";
 export const ADD_MESSAGE = "addMessage";
@@ -45,20 +45,10 @@ class ChatActions extends Actions<ChatState, ChatGetters, ChatMutations, ChatAct
   [ADD_ROOM](payload: Room) {
     this.commit(ADD_ROOM, payload);
   }
-  [LOAD_ROOM_MESSAGES](id: number) {
-    const room = this.state.rooms.find(r => r.id === id)!;
-    if (room.messages.length) {
-      return;
-    }
-
-    Api.chat.loadRoomMessages(id).then((response) => {
-      if (!response.success) {
-        throw new Error(response.error);
-      }
-
-      room.messages = response.data;
-    })
-      .catch((e: Error) => console.log(e.message));
+  [PREPEND_ROOM_MESSAGES](payload: { roomId: number, messages: Message[] }) {
+    const room = this.state.rooms.find(r => r.id === payload.roomId)!;
+    room.messages.unshift(...payload.messages);
+    this.dispatch(RELOAD_MESSAGES, { scrollToBottom: false });
   }
 
   [SEND_MESSAGE](payload: any) {

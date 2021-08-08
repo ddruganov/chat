@@ -1,9 +1,17 @@
 .link {
-  color: $blue;
+  color: $primary;
   cursor: pointer;
   transition: 0.25s linear all;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
   &:hover {
-    color: $dark-blue;
+    color: $dark-primary;
     text-decoration: underline;
+  }
+  &:active {
+    color: $darker-primary;
   }
 }

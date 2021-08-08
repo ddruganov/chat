@@ -1,20 +1,20 @@
 .button {
-  background: $blue;
+  background: $primary;
   color: $white;
   width: 100%;
   padding: 0.5rem 1rem;
-  border: 1px solid $blue;
+  border: 1px solid $primary;
   border-radius: $border-radius;
   transition: 0.25s all linear;
 
   &:hover {
-    border: 1px solid $dark-blue;
-    background: $dark-blue;
+    border: 1px solid $dark-primary;
+    background: $dark-primary;
   }
 
   &:active {
-    border: 1px solid $darker-blue;
-    background: $darker-blue;
+    border: 1px solid $darker-primary;
+    background: $darker-primary;
   }
 
   * {
@@ -24,5 +24,14 @@
   &:disabled {
     opacity: 0.75;
     pointer-events: none;
+  }
+}
+
+.button.danger {
+  background-color: $red;
+  border-color: $red;
+  &:hover {
+    background-color: $dark-red;
+    border-color: $dark-red;
   }
 }
